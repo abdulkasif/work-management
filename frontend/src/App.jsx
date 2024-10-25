@@ -17,9 +17,13 @@ function App() {
      
     <Routes>
 
+<<<<<<< HEAD
       <Route path="/home" element={<Home/>}/>
+=======
+      <Route path="/" element={<LoginPage/>}/>
+>>>>>>> 45767d9edc9a12afd854e5969b06ba1cb3d6d6b0
       <Route path="/signup" element={<SignUpPage/>}/>
-      <Route path="/login" element={<LoginPage/>}/>
+      <Route path="/home" element={<Home/>}/>
       <Route path="/emailverfication" element={<EmailVerificationPage/>}/>
       <Route path="/reset-password" element={<ResetPasswordPage/>}/>
       <Route path="/forget-password" element={<ForgotPasswordPage/>}/>
