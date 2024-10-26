@@ -4,7 +4,7 @@ import React from 'react';
 const MonthlyRevenueChart = () => {
   return (
     <div className="flex flex-wrap gap-4 px-4 py-6">
-      <div className="flex min-w-72 flex-1 flex-col gap-2 rounded-xl border border-[#3d4a52] bg-[#2a2a3e] p-6">
+      <div className="flex min-w-72 flex-1 flex-col gap-2 rounded-xl border border-[#3d4a52] bg-[#17272f] p-6">
         <p className="text-white text-base font-medium leading-normal">Monthly Revenue</p>
         <div className="flex min-h-[180px] flex-1 flex-col gap-8 py-4">
           <svg width="100%" height="148" viewBox="-3 0 478 150" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">

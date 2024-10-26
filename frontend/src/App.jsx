@@ -6,6 +6,9 @@ import SignUpPage from "./pages/SignUpPage";
 import EmailVerificationPage from "./pages/EmailVerificationPage";
 import ResetPagePassword from "./pages/ResetPagePassword"; 
 import ForgetPasswordPage from "./pages/ForgetPasswordPage"; 
+import AddClientPage from "./pages/homepages/AddClientPage";
+import AddProjectPage from "./pages/homepages/AddProjectPage";
+import AddMemberPage from "./pages/homepages/AddMemberPage";
 
 function App() {
   return (
@@ -17,6 +20,9 @@ function App() {
         <Route path="/emailverification" element={<EmailVerificationPage />} />
         <Route path="/reset-password" element={<ResetPagePassword />} />
         <Route path="/forget-password" element={<ForgetPasswordPage />} /> 
+        <Route path="/add-client" element={<AddClientPage />} />
+        <Route path="/add-project" element={<AddProjectPage />} />
+        <Route path="/add-member" element={<AddMemberPage />} />
       </Routes>
     </div>
   );
