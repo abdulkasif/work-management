@@ -1,20 +1,42 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Mail, Lock, Loader } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import Input from "../components/Input";
 
 
+
 const LoginPage = () => {
+	const navigate = useNavigate();
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+	const [redirect, setRedirect]  = useState(false);
 
 	const  isLoading = false;
 
 	const handleLogin = async (e) => {
 		e.preventDefault();
+		
+
+		const response = await fetch('http://localhost:8080/api/users/login', {
+			method: 'POST',
+			body: JSON.stringify({email , password}),
+			headers: { 'Content-Type': 'application/json' },
+		})
+
+		if(response.status === 201){
+			setRedirect(true);
+			alert("Login passed");
+
+		}else{
+			alert("Login failed");
+		}
 
 	};
+
+	if(redirect){
+		return navigate('/home');
+	}
 
 	return (
 		<div className='min-h-screen flex items-center justify-center relative overflow-hidden'>

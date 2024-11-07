@@ -13,7 +13,7 @@ const Header = () => {
         {['Home', 'Clients', 'Members', 'Projects', 'Invoices'].map((item) => (
           <motion.a
             key={item}
-            href="#"
+            href="home"
             className="text-white text-sm font-medium leading-normal"
             whileHover={{ scale: 1.05, color: '#1d8cd7' }} // Animation on hover
             whileTap={{ scale: 0.95 }} // Animation on tap
