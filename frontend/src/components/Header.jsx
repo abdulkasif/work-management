@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import SearchBar from './SearchBar';
+import ProfilePicture from './ProfilePicture';
 
 const Header = () => {
   return (
@@ -25,10 +26,7 @@ const Header = () => {
     </div>
     <div className="flex flex-1 justify-end gap-8">
       <SearchBar />
-      <div
-        className="bg-center bg-no-repeat aspect-square bg-cover rounded-full w-10 h-10"
-        style={{ backgroundImage: 'url("https://cdn.usegalileo.ai/sdxl10/85dd54b6-9653-4190-8f16-2ea78dec2ac4.png")' }}
-      />
+      <ProfilePicture/>
     </div>
   </header>
   );
