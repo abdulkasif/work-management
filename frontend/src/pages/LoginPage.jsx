@@ -39,7 +39,7 @@ const LoginPage = () => {
         navigate("/home"); // Redirect to home
       } else {
         alert("Login failed");
-      }
+      } 
     } catch (error) {
       alert("An error occurred during login");
     } finally {
