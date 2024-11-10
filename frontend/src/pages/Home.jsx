@@ -9,7 +9,7 @@ import Header from '../components/Header';
 const Home = () => {
   return (
     <>
-      <div className="flex flex-col min-h-screen bg-sky-500 bg-opacity-90 bg-[url('/assets/images/background.png')] 
+      <div className="flex flex-col min-h-screen bg-gray-900 bg-opacity-100 
     bg-cover bg-center backdrop-filter backdrop-blur-xl rounded-2xl shadow-xl overflow-hidden">
 
 
