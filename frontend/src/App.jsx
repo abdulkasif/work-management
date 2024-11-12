@@ -9,11 +9,13 @@ import ForgetPasswordPage from "./pages/ForgetPasswordPage";
 import AddClientPage from "./pages/homepages/AddClientPage";
 import AddProjectPage from "./pages/homepages/AddProjectPage";
 import AddMemberPage from "./pages/homepages/AddMemberPage";
-import ProtectedRoute from "./context/ProtectedRoute.jsx"
+import ProtectedRoute from "./context/ProtectedRoute.jsx";
+import ShowClientPage from "./pages/detailpages/ShowClientPage.jsx";
+import ShowMemberPage from "./pages/detailpages/ShowMemberPage.jsx";
 
 function App() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-green-900 to-emerald-900">
+    <div className="min-h-screen bg-gray-900 ">
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<LoginPage />} />
@@ -73,6 +75,22 @@ function App() {
           element={
             <ProtectedRoute>
               <AddMemberPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/clients"
+          element={
+            <ProtectedRoute>
+              <ShowClientPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/members"
+          element={
+            <ProtectedRoute>
+              <ShowMemberPage />
             </ProtectedRoute>
           }
         />

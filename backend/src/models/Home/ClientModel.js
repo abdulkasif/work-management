@@ -4,50 +4,50 @@ const clientSchema = new mongoose.Schema({
   clientId: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
   },
   clientName: {
     type: String,
-    required: true
+    required: true,
   },
   firstName: {
     type: String,
-    required: true
+    required: true,
   },
   lastName: {
     type: String,
-    required: true
+    required: true,
   },
   email: {
     type: String,
     required: true,
     unique: true,
-    match: [/.+\@.+\..+/, "Please fill a valid email address"]
+    match: [/.+\@.+\..+/, "Please fill a valid email address"],
   },
   phone: {
     type: String,
-    required: true
+    required: true,
   },
   address: {
     type: String,
-    required: true
+    required: true,
   },
   country: {
     type: String,
-    required: true
+    required: true,
   },
   currency: {
     type: String,
-    required: true
+    required: true,
   },
   paymentTerms: {
     type: String,
-    required: true
+    required: true,
   },
   createdAt: {
     type: Date,
-    default: Date.now
-  }
+    default: Date.now,
+  },
 });
 
 module.exports = mongoose.model("Client", clientSchema);

@@ -1,10 +1,18 @@
-const express = require('express');
-const { createClient, addMember } = require('../controllers/HomeController');
+const express = require("express");
+const { createClient, getAllClient } = require("../controllers/Home/CilentController.js");
+const {
+  addMember,
+  getAllMember,
+} = require("../controllers/Home/MemberController.js");
 
 const router = express.Router();
 
-router.post('/client',createClient);
+//All CLient Routes
+router.post("/client", createClient);
+router.get("/getclient",getAllClient);
 
-router.post('/member',addMember);
+//All Member Routes
+router.post("/member", addMember);
+router.get("/getmember", getAllMember);
 
 module.exports = router;
