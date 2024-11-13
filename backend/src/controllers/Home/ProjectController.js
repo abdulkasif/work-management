@@ -17,8 +17,25 @@ const createProject = async (req, res) => {
 };
 
 
+const getAllProject = async (req,res) => {
+  try {
+    const projects = Project.find();
+    res.status(201).json({
+      success: true,
+      data: projects
+    })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      mesaage: "Project details are not found",
+      error: error.message
+    })
+    
+  }
+}
 
 module.exports = {
-  createProject
+  createProject,
+  getAllProject
  
 };
