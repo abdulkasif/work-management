@@ -19,10 +19,10 @@ const createProject = async (req, res) => {
 
 const getAllProject = async (req,res) => {
   try {
-    const projects = Project.find();
-    res.status(201).json({
+    const projects = await Project.find();
+    res.status(200).json({
       success: true,
-      data: projects
+      data: projects,
     })
   } catch (error) {
     res.status(500).json({
