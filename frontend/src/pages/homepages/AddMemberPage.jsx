@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../../components/Header"; // Adjust the path as necessary
 import { Lock } from "lucide-react"; // Assuming you're using react-feather icons
 import PasswordStrengthMeter from "../../components/PaswordStrengthMeter";
@@ -25,6 +25,7 @@ function AddMemberPage() {
   
   const [password, setPassword] = useState(""); // New password state
   const [isPasswordFocused, setIsPasswordFocused] = useState(false); // State to track focus
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   // Handle input changes
   const handleInputChange = (e) => {
@@ -51,6 +52,9 @@ function AddMemberPage() {
       if (response.ok) {
         const result = await response.json();
         console.log("Member added successfully:", result);
+        alert("Member is added Successfully");
+        setIsSubmitted(true);
+
       } else {
         console.error("Failed to add member:", response.statusText);
       }
@@ -58,6 +62,12 @@ function AddMemberPage() {
       console.error("Error:", error);
     }
   };
+
+  useEffect(() => {
+    if(isSubmitted){
+      window.location.reload();
+    }
+  },[isSubmitted]);
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-900">

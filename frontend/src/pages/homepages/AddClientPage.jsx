@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../../components/Header";
 import Inputclient from "../../components/homecomponents/Inputclient";
 import { FiUser, FiMapPin, FiGlobe, FiDollarSign, FiMail, FiPhone } from "react-icons/fi";
@@ -16,6 +16,8 @@ function AddClientPage() {
     currency: "",
     paymentTerms: ""
   });
+
+const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleChange = (field, value) => {
     setClientData((prevData) => ({
@@ -38,18 +40,7 @@ function AddClientPage() {
 
       if (response.ok) {
         alert("Client added successfully!");
-        setClientData({
-          clientId: "",
-          clientName: "",
-          firstName: "",
-          lastName: "",
-          email: "",
-          phone: "",
-          address: "",
-          country: "",
-          currency: "",
-          paymentTerms: ""
-        });
+        setIsSubmitted(true);
       } else {
         console.error("Failed to add client");
       }
@@ -57,6 +48,12 @@ function AddClientPage() {
       console.error("Error:", error);
     }
   };
+
+  useEffect(()=>{
+    if(isSubmitted){
+      window.location.reload();
+    }
+  },[isSubmitted])
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-900">

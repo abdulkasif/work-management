@@ -9,34 +9,10 @@ const User = require("../../models/UserModel.js");
 exports.createClient = async (req, res) => {
   try {
     // Extract data from the request body
-    const {
-      clientId,
-      clientName,
-      firstName,
-      lastName,
-      email,
-      phone,
-      address,
-      country,
-      currency,
-      paymentTerms
-      
-    } = req.body;
+    
 
     // Create a new client instance
-    const newClient = new Client({
-      clientId,
-      clientName,
-      firstName,
-      lastName,
-      email,
-      phone,
-      address,
-      country,
-      currency,
-      paymentTerms
-      
-    });
+    const newClient = new Client(req.body);
 
     // Save the client to the database
     const savedClient = await newClient.save();
