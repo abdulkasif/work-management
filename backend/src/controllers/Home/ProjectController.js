@@ -34,8 +34,35 @@ const getAllProject = async (req,res) => {
   }
 }
 
+const deleteProjectById = async (req,res) => {
+  try {
+    const projectId = req.params.id;
+
+    const deletedProject = await Project.findByIdAndDelete(projectId);
+
+    if(!deletedProject){
+      return res.status(404).json({
+        success: false,
+        message: "Project is not found"
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Project Deleted Successfully",
+      data: deletedProject
+    })
+  } catch (error) {
+    console.error("Error deleting client:", error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to delete client',
+    });
+    
+  }
+}
 module.exports = {
   createProject,
-  getAllProject
- 
+  getAllProject,
+  deleteProjectById,
 };

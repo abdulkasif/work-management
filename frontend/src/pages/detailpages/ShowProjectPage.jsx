@@ -136,7 +136,7 @@ const ShowProjectPage = () => {
                   </p>
                   <p className="flex items-center gap-3 text-lg">
                     <FaProjectDiagram size={20} /> 
-                    <strong>Client:</strong> {project.client}
+                    <strong>Client:</strong> {project.clientName}
                   </p>
                   <p className="flex items-center gap-3 text-lg">
                     <FaBuilding size={20} /> 

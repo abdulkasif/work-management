@@ -1,15 +1,13 @@
-const Client = require("../../models/Home/ClientModel.js"); 
+const Client = require("../../models/Home/ClientModel.js");
 const Member = require("../../models/Home/MemberModel.js");
 // Controller function to add a new member
-const bcrypt = require('bcryptjs');
+const bcrypt = require("bcryptjs");
 const User = require("../../models/UserModel.js");
-
 
 // Controller to add a new client
 exports.createClient = async (req, res) => {
   try {
     // Extract data from the request body
-    
 
     // Create a new client instance
     const newClient = new Client(req.body);
@@ -20,7 +18,7 @@ exports.createClient = async (req, res) => {
     // Send a success response
     res.status(201).json({
       message: "Client added successfully",
-      client: savedClient
+      client: savedClient,
     });
   } catch (error) {
     // Handle errors and send a failure response
@@ -33,32 +31,45 @@ exports.createClient = async (req, res) => {
   }
 };
 
-
 //Fetching all the client details from the databasee
 
-exports.getAllClient = async (req,res) => {
+exports.getAllClient = async (req, res) => {
   try {
-    
     const clients = await Client.find();
 
     res.status(200).json({
       success: true,
       data: clients,
-    })
-    
+    });
   } catch (error) {
-     res.status(500).json({
+    res.status(500).json({
       success: false,
       message: "Clients cannot be fetched",
       error: error.message,
-     })
+    });
   }
-}
+};
 
+exports.deleteClientById = async (req, res) => {
+  try {
+    const clientId = req.params.id; // Get client ID from request parameters
 
+    const deletedClient = await Client.findByIdAndDelete(clientId);
 
+    if (!deletedClient) {
+      return res.status(404).json({ success: false, message: 'Client not found' });
+    }
 
-
-
-
-
+    res.status(200).json({
+      success: true,
+      message: 'Client deleted successfully',
+      data: deletedClient,
+    });
+  } catch (error) {
+    console.error("Error deleting client:", error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to delete client',
+    });
+  }
+};
