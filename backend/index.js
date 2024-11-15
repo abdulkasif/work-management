@@ -2,6 +2,7 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
+const bodyParser = require("body-parser");
 const {dbconn} = require('./src/connection/dbconn.js');
 const userRoutes = require('./src/routes/UserRoute.js');
 const HomeRoutes =require('./src/routes/HomeRoute.js')
@@ -14,6 +15,7 @@ app.use(cors({
   origin:'http://localhost:5173'
 }));
 app.use(express.json());
+app.use(bodyParser.text());
 
 //DATABASE CONNECTIVITY
 dbconn();

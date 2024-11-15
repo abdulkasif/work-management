@@ -60,3 +60,32 @@ exports.getAllMember = async (req, res) => {
     });
   }
 };
+
+exports.deleteMemberById = async (req, res) => {
+  try {
+    const memberId = req.params.id;
+    const { email } = req.body; // Extract the email from the request body
+
+    // Assuming you are using email to identify the member for deletion
+    const deletedMember = await Member.findByIdAndDelete(memberId);
+    const deletedUser = await User.findOneAndDelete({email: email});
+
+    if (!deletedMember) {
+      return res.status(404).json({ success: false, message: 'Member not found or email mismatch' });
+    }
+
+    
+
+    res.status(200).json({
+      success: true,
+      message: 'Member deleted successfully',
+      data: deletedUser,
+    });
+  } catch (error) {
+    console.error("Error deleting member:", error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to delete member',
+    });
+  }
+};

@@ -7,6 +7,7 @@ const {
 const {
   addMember,
   getAllMember,
+  deleteMemberById,
 } = require("../controllers/Home/MemberController.js");
 const {
   createProject,
@@ -24,6 +25,7 @@ router.delete("/deleteclient/:id", deleteClientById);
 //All Member Routes
 router.post("/member", addMember);
 router.get("/getmember", getAllMember);
+router.delete("/deletemember/:id", deleteMemberById);
 
 //All Project Routes
 router.post("/project", createProject);

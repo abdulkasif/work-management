@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { FaUser, FaEnvelope, FaIdBadge, FaEdit, FaTrashAlt, FaBriefcase } from "react-icons/fa";
+import {
+  FaUser,
+  FaEnvelope,
+  FaIdBadge,
+  FaEdit,
+  FaTrashAlt,
+  FaBriefcase,
+} from "react-icons/fa";
 import Header from "../../components/Header";
 
 const ShowMemberPage = () => {
@@ -9,20 +16,24 @@ const ShowMemberPage = () => {
   const [deleteConfirmVisible, setDeleteConfirmVisible] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [selectedMemberId, setSelectedMemberId] = useState(null);
-  const [deleteInput, setDeleteInput] = useState('');
+  const [selectedMemberEmail, setSelectedMemberEmail] = useState(null);
+  const [deleteInput, setDeleteInput] = useState("");
   const [editMember, setEditMember] = useState({
-    name: '',
-    email: '',
-    designation: '',
+    name: "",
+    email: "",
+    designation: "",
   });
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/home/getmember", {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-        });
+        const response = await fetch(
+          "http://localhost:8080/api/home/getmember",
+          {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+          }
+        );
 
         if (!response.ok) {
           throw new Error(`Error: ${response.statusText}`);
@@ -54,26 +65,41 @@ const ShowMemberPage = () => {
     setEditModalVisible(true); // Show Edit modal
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = (id, email) => {
     setSelectedMemberId(id);
+    setSelectedMemberEmail(email);
     setDeleteConfirmVisible(true); // Show delete confirmation modal
   };
 
   const confirmDelete = async () => {
     if (deleteInput === "Delete") {
       try {
-        const response = await fetch(`http://localhost:8080/api/home/deletemember/${selectedMemberId}`, {
-          method: "DELETE",
-        });
+        console.log(selectedMemberEmail);
+
+        // Sending the email as part of the request body in JSON format
+        const response = await fetch(
+          `http://localhost:8080/api/home/deletemember/${selectedMemberId}`,
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json", // Use 'application/json' as the content type
+            },
+            body: JSON.stringify({ email: selectedMemberEmail }), // Sending the email in the body as JSON
+          }
+        );
+
         if (!response.ok) throw new Error(`Error: ${response.statusText}`);
 
-        setMemberData(memberData.filter((member) => member._id !== selectedMemberId));
+        // Update the member data after deletion
+        setMemberData(
+          memberData.filter((member) => member._id !== selectedMemberId)
+        );
         alert("Member deleted successfully");
       } catch (error) {
         console.error("Failed to delete member:", error);
       } finally {
         setDeleteConfirmVisible(false); // Close the modal
-        setDeleteInput(''); // Reset the input field
+        setDeleteInput(""); // Reset the input field
       }
     } else {
       alert("Please type 'Delete' to confirm.");
@@ -82,16 +108,19 @@ const ShowMemberPage = () => {
 
   const cancelDelete = () => {
     setDeleteConfirmVisible(false); // Close the modal
-    setDeleteInput(''); // Reset the input field
+    setDeleteInput(""); // Reset the input field
   };
 
   const handleSaveEdit = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/home/updatemember/${selectedMemberId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(editMember),
-      });
+      const response = await fetch(
+        `http://localhost:8080/api/home/updatemember/${selectedMemberId}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(editMember),
+        }
+      );
 
       if (!response.ok) throw new Error(`Error: ${response.statusText}`);
 
@@ -153,7 +182,7 @@ const ShowMemberPage = () => {
                     <FaEdit size={24} />
                   </button>
                   <button
-                    onClick={() => handleDelete(member._id)}
+                    onClick={() => handleDelete(member._id, member.email)}
                     className="text-red-500 hover:text-red-700 transition-all duration-200"
                   >
                     <FaTrashAlt size={24} />
@@ -231,7 +260,9 @@ const ShowMemberPage = () => {
                 <input
                   type="text"
                   value={editMember.name}
-                  onChange={(e) => setEditMember({ ...editMember, name: e.target.value })}
+                  onChange={(e) =>
+                    setEditMember({ ...editMember, name: e.target.value })
+                  }
                   className="w-full p-2 rounded bg-gray-700 text-white"
                 />
               </div>
@@ -240,7 +271,9 @@ const ShowMemberPage = () => {
                 <input
                   type="email"
                   value={editMember.email}
-                  onChange={(e) => setEditMember({ ...editMember, email: e.target.value })}
+                  onChange={(e) =>
+                    setEditMember({ ...editMember, email: e.target.value })
+                  }
                   className="w-full p-2 rounded bg-gray-700 text-white"
                 />
               </div>
@@ -249,7 +282,12 @@ const ShowMemberPage = () => {
                 <input
                   type="text"
                   value={editMember.designation}
-                  onChange={(e) => setEditMember({ ...editMember, designation: e.target.value })}
+                  onChange={(e) =>
+                    setEditMember({
+                      ...editMember,
+                      designation: e.target.value,
+                    })
+                  }
                   className="w-full p-2 rounded bg-gray-700 text-white"
                 />
               </div>
