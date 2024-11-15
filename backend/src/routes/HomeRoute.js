@@ -3,6 +3,7 @@ const {
   createClient,
   getAllClient,
   deleteClientById,
+  updateClientById,
 } = require("../controllers/Home/CilentController.js");
 const {
   addMember,
@@ -13,6 +14,7 @@ const {
   createProject,
   getAllProject,
   deleteProjectById,
+  updateProjectById,
 } = require("../controllers/Home/ProjectController.js");
 
 const router = express.Router();
@@ -21,7 +23,7 @@ const router = express.Router();
 router.post("/client", createClient);
 router.get("/getclient", getAllClient);
 router.delete("/deleteclient/:id", deleteClientById);
-
+router.put("/editclient/:id",updateClientById);
 //All Member Routes
 router.post("/member", addMember);
 router.get("/getmember", getAllMember);
@@ -31,5 +33,6 @@ router.delete("/deletemember/:id", deleteMemberById);
 router.post("/project", createProject);
 router.get("/getproject", getAllProject);
 router.delete("/deleteproject/:id", deleteProjectById);
+router.put("/editproject/:id",updateProjectById);
 
 module.exports = router;

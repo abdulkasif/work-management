@@ -1,20 +1,19 @@
 import React, { useEffect, useState } from "react";
+
 import Header from "../../components/Header.jsx";
 import { FaUser, FaEnvelope, FaIdBadge, FaEdit, FaTrashAlt, FaPhone } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const ShowClientPage = () => {
+  const navigate = useNavigate();
+
   const [clientData, setClientData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [deleteConfirmVisible, setDeleteConfirmVisible] = useState(false);
   const [deleteInput, setDeleteInput] = useState('');
   const [selectedClientId, setSelectedClientId] = useState(null);
-  const [editModalVisible, setEditModalVisible] = useState(false);
-  const [editClientData, setEditClientData] = useState({
-    clientName: "",
-    email: "",
-    phone: "",
-  });
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -72,42 +71,10 @@ const ShowClientPage = () => {
   };
 
   const handleEdit = (client) => {
-    setEditClientData({
-      clientName: client.clientName,
-      email: client.email,
-      phone: client.phone,
-    });
-    setSelectedClientId(client._id);
-    setEditModalVisible(true);
+    navigate('/add-client', {state: {client}})
   };
 
-  const handleEditSave = async () => {
-    try {
-      const response = await fetch(`http://localhost:8080/api/home/editclient/${selectedClientId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(editClientData),
-      });
-
-      if (!response.ok) throw new Error(`Error: ${response.statusText}`);
-
-      const updatedClient = await response.json();
-      setClientData(clientData.map((client) => 
-        client._id === selectedClientId ? updatedClient : client
-      ));
-      alert("Client updated successfully");
-      setEditModalVisible(false);
-    } catch (error) {
-      console.error("Failed to update client:", error);
-    }
-  };
-
-  const handleEditCancel = () => {
-    setEditModalVisible(false);
-  };
-
+  
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
@@ -206,59 +173,6 @@ const ShowClientPage = () => {
         </div>
       )}
 
-      {/* Edit Modal */}
-      {editModalVisible && (
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
-          <div className="bg-gray-800 p-6 rounded-lg w-96">
-            <div className="flex justify-end">
-              <button
-                onClick={handleEditCancel}
-                className="text-white text-xl font-bold"
-              >
-                X
-              </button>
-            </div>
-            <h3 className="text-xl text-center mb-4 text-blue-500">Edit Client</h3>
-            <div className="space-y-4">
-              <input
-                type="text"
-                value={editClientData.clientName}
-                onChange={(e) => setEditClientData({ ...editClientData, clientName: e.target.value })}
-                className="w-full p-2 rounded bg-gray-700 text-white"
-                placeholder="Name"
-              />
-              <input
-                type="email"
-                value={editClientData.email}
-                onChange={(e) => setEditClientData({ ...editClientData, email: e.target.value })}
-                className="w-full p-2 rounded bg-gray-700 text-white"
-                placeholder="Email"
-              />
-              <input
-                type="text"
-                value={editClientData.phone}
-                onChange={(e) => setEditClientData({ ...editClientData, phone: e.target.value })}
-                className="w-full p-2 rounded bg-gray-700 text-white"
-                placeholder="Phone"
-              />
-            </div>
-            <div className="flex justify-between mt-4">
-              <button
-                onClick={handleEditCancel}
-                className="bg-gray-600 text-white px-4 py-2 rounded"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleEditSave}
-                className="bg-blue-600 text-white px-4 py-2 rounded"
-              >
-                Save Changes
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

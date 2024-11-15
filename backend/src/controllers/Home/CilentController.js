@@ -57,19 +57,61 @@ exports.deleteClientById = async (req, res) => {
     const deletedClient = await Client.findByIdAndDelete(clientId);
 
     if (!deletedClient) {
-      return res.status(404).json({ success: false, message: 'Client not found' });
+      return res
+        .status(404)
+        .json({ success: false, message: "Client not found" });
     }
 
     res.status(200).json({
       success: true,
-      message: 'Client deleted successfully',
+      message: "Client deleted successfully",
       data: deletedClient,
     });
   } catch (error) {
     console.error("Error deleting client:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to delete client',
+      message: "Failed to delete client",
     });
+  }
+};
+
+exports.updateClientById = async (req, res) => {
+  try {
+    const clientId = req.params.id;
+    const updateData = req.body;
+
+    const updatedData = await Client.findByIdAndUpdate(
+      clientId,
+      { $set: updateData },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedData) {
+      return res.status(404).json({
+        success: false,
+        message: "Client is not found",
+      });
+    }
+    res.status(200).json({
+      success: true,
+      message: "Client is updated",
+      data: updatedData,
+    })
+  } catch (error) {
+    console.error("Error ..", error);
+    if (error.name === "ValidationError") {
+      res.status(400).json({
+        success: false,
+        message: "invalid data provided",
+        error: error.message,
+      });
+    }else{
+      res.status(500).json({
+        success: false,
+        message: "cannot update client",
+        error: error.message,
+      })
+    }
   }
 };

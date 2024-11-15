@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import Header from "../../components/Header";
 import { FaIdBadge, FaProjectDiagram, FaBuilding, FaFileAlt, FaEdit, FaTrashAlt } from "react-icons/fa"; // Icons for project fields
+import { useNavigate } from "react-router-dom";
 
 const ShowProjectPage = () => {
+  const navigate = useNavigate();
   const [projectData, setProjectData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -11,12 +13,7 @@ const ShowProjectPage = () => {
   const [deleteConfirmVisible, setDeleteConfirmVisible] = useState(false);
   const [deleteInput, setDeleteInput] = useState('');
   const [selectedProjectId, setSelectedProjectId] = useState(null);
-  const [editModalVisible, setEditModalVisible] = useState(false);
-  const [editProjectData, setEditProjectData] = useState({
-    title: "",
-    client: "",
-    pages: "",
-  });
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -78,40 +75,7 @@ const ShowProjectPage = () => {
 
   // Handle Edit
   const handleEdit = (project) => {
-    setEditProjectData({
-      title: project.title,
-      client: project.client,
-      pages: project.pages,
-    });
-    setSelectedProjectId(project._id);
-    setEditModalVisible(true);
-  };
-
-  const handleEditSave = async () => {
-    try {
-      const response = await fetch(`http://localhost:8080/api/home/editproject/${selectedProjectId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(editProjectData),
-      });
-
-      if (!response.ok) throw new Error(`Error: ${response.statusText}`);
-
-      const updatedProject = await response.json();
-      setProjectData(projectData.map((project) =>
-        project._id === selectedProjectId ? updatedProject : project
-      ));
-      alert("Project updated successfully");
-      setEditModalVisible(false);
-    } catch (error) {
-      console.error("Failed to update project:", error);
-    }
-  };
-
-  const handleEditCancel = () => {
-    setEditModalVisible(false);
+    navigate('/add-project', {state: {project}});
   };
 
   if (loading) return <div>Loading...</div>;
@@ -206,60 +170,6 @@ const ShowProjectPage = () => {
                 className="bg-red-600 text-white px-4 py-2 rounded"
               >
                 Delete
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Edit Modal */}
-      {editModalVisible && (
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
-          <div className="bg-gray-800 p-6 rounded-lg w-96">
-            <div className="flex justify-end">
-              <button
-                onClick={handleEditCancel}
-                className="text-white text-xl font-bold"
-              >
-                X
-              </button>
-            </div>
-            <h3 className="text-xl text-center mb-4 text-blue-500">Edit Project</h3>
-            <div className="space-y-4">
-              <input
-                type="text"
-                value={editProjectData.title}
-                onChange={(e) => setEditProjectData({ ...editProjectData, title: e.target.value })}
-                className="w-full p-2 rounded bg-gray-700 text-white"
-                placeholder="Title"
-              />
-              <input
-                type="text"
-                value={editProjectData.client}
-                onChange={(e) => setEditProjectData({ ...editProjectData, client: e.target.value })}
-                className="w-full p-2 rounded bg-gray-700 text-white"
-                placeholder="Client"
-              />
-              <input
-                type="text"
-                value={editProjectData.pages}
-                onChange={(e) => setEditProjectData({ ...editProjectData, pages: e.target.value })}
-                className="w-full p-2 rounded bg-gray-700 text-white"
-                placeholder="Pages"
-              />
-            </div>
-            <div className="flex justify-between mt-4">
-              <button
-                onClick={handleEditCancel}
-                className="bg-gray-600 text-white px-4 py-2 rounded"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleEditSave}
-                className="bg-blue-600 text-white px-4 py-2 rounded"
-              >
-                Save Changes
               </button>
             </div>
           </div>
