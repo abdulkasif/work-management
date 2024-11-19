@@ -82,7 +82,7 @@ function AddClientPage() {
       <div className="flex-grow flex items-center justify-center p-4">
         <div className="max-w-lg w-full bg-gray-800 bg-opacity-50 p-8 rounded-lg shadow-lg backdrop-filter backdrop-blur-xl">
           <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text">
-            Add New Client
+            {existingClient ? "Edit Client": "Add Client" }
           </h2>
 
           <form onSubmit={handleSubmit} className="space-y-4">

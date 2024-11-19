@@ -9,16 +9,11 @@ exports.addMember = async (req, res) => {
   try {
     // Extract data from the request body
     const { name, email, password, designation } = req.body;
-
-    // Hash password
-    const salt = bcrypt.genSaltSync(10);
-    const hashedPassword = bcrypt.hashSync(password, salt);
-
     // Create a new user object with the required fields
     const newUser = new User({
       name,
       email,
-      password: hashedPassword, // Store the hashed password
+      password, // Store the hashed password
       designation,
     });
 
@@ -86,6 +81,63 @@ exports.deleteMemberById = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to delete member',
+    });
+  }
+};
+
+exports.updateMemberById = async (req, res) => {
+  try {
+    const memberId = req.params.id;
+    const updateData = req.body;
+
+    // Find the member by ID to get the associated email
+    const member = await Member.findById(memberId);
+    if (!member) {
+      return res.status(404).json({ success: false, message: 'Member not found' });
+    }
+
+    // Update the member info
+    const updatedMember = await Member.findByIdAndUpdate(
+      memberId,
+      { $set: updateData },
+      { new: true, runValidators: true }
+    );
+
+    // Prepare update data for the User model
+    const userUpdateData = {
+      name: updateData.name || member.name,
+      email: updateData.email || member.email,
+      designation: updateData.designation || member.designation,
+      password: updateData.password || member.password,
+    };
+
+    // Update the corresponding user
+    const updatedUser = await User.findOneAndUpdate(
+      { email: member.email }, // Match the user's email
+      { $set: userUpdateData },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({
+        success: false,
+        message: 'User associated with the member not found',
+      });
+    }
+
+    // Send a success response
+    res.status(200).json({
+      success: true,
+      message: 'Member and User updated successfully',
+      member: updatedMember,
+      user: updatedUser,
+    });
+  } catch (error) {
+    console.error('Error updating member:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to update member and user',
+      error: error.message || 'Unknown error occurred',
     });
   }
 };

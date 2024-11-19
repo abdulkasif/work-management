@@ -9,6 +9,7 @@ const {
   addMember,
   getAllMember,
   deleteMemberById,
+  updateMemberById,
 } = require("../controllers/Home/MemberController.js");
 const {
   createProject,
@@ -28,6 +29,7 @@ router.put("/editclient/:id",updateClientById);
 router.post("/member", addMember);
 router.get("/getmember", getAllMember);
 router.delete("/deletemember/:id", deleteMemberById);
+router.put("/editmember/:id",updateMemberById);
 
 //All Project Routes
 router.post("/project", createProject);
