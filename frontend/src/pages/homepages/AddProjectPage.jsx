@@ -1,9 +1,15 @@
 import React, { useEffect, useState } from "react";
 import Header from "../../components/Header";
 import Input_product from "../../components/homecomponents/Input_product";
-import { FiCalendar, FiDollarSign, FiFileText, FiHash } from "react-icons/fi";
+import {
+  FiCalendar,
+  FiDollarSign,
+  FiFileText,
+  FiHash,
+  FiUsers,
+} from "react-icons/fi";
 import { useLocation, useNavigate } from "react-router-dom";
-import {format} from "date-fns";
+import { format } from "date-fns";
 
 function AddProjectPage() {
   const navigate = useNavigate();
@@ -20,15 +26,54 @@ function AddProjectPage() {
     inputType: existingProject?.inputType || "Physical",
     complexity: existingProject?.complexity || "Easy",
     receivedDate: existingProject?.receivedDate
-    ? format(new Date(existingProject.receivedDate), "yyyy-MM-dd")
-    : "",
-  dueDate: existingProject?.dueDate
-    ? format(new Date(existingProject.dueDate), "yyyy-MM-dd")
-    : "",
+      ? format(new Date(existingProject.receivedDate), "yyyy-MM-dd")
+      : "",
+    dueDate: existingProject?.dueDate
+      ? format(new Date(existingProject.dueDate), "yyyy-MM-dd")
+      : "",
     clientCost: existingProject?.clientCost || "",
     outsourceCost: existingProject?.outsourceCost || "",
     productionCost: existingProject?.productionCost || "",
+    description: existingProject?.description || "",
+    status: existingProject?.status || "Pending",
+    assignedMembers: existingProject?.assignedMembers || [],
   });
+
+  const [allMembers, setAllMembers] = useState([]); // For fetching available members
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:8080/api/home/getmember",
+          {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`Error: ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        if (result.success && Array.isArray(result.data)) {
+          setAllMembers(result.data);
+        } else {
+          throw new Error("Unexpected response format");
+        }
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   // Handle input change
   const handleChange = (field, value) => {
@@ -62,7 +107,7 @@ function AddProjectPage() {
             ? "Project updated successfully!"
             : "Project added successfully!"
         );
-        navigate('/projects'); // Navigate back to the projects page
+        navigate("/projects"); // Navigate back to the projects page
       } else {
         console.error("Failed to save project data");
       }
@@ -80,6 +125,7 @@ function AddProjectPage() {
             {existingProject ? "Edit Project" : "New Project"}
           </h2>
           <form className="space-y-4" onSubmit={handleSubmit}>
+            {/* Existing Inputs */}
             <Input_product
               label="Project ID"
               placeholder="12345"
@@ -113,8 +159,66 @@ function AddProjectPage() {
               value={projectData.pages}
               onChange={(e) => handleChange("pages", e.target.value)}
             />
+
+            {/* New Inputs */}
+            <Input_product
+              label="Description"
+              placeholder="Brief description of the project"
+              value={projectData.description}
+              onChange={(e) => handleChange("description", e.target.value)}
+            />
             <label className="flex flex-col mb-4">
-              <p className="text-white text-base font-medium pb-2">Input Type</p>
+              <p className="text-white text-base font-medium pb-2">Status</p>
+              <select
+                className="form-input w-full h-12 rounded-lg text-white border border-gray-700 bg-gray-800 focus:border-green-500 focus:ring-2 focus:ring-green-500 placeholder-gray-400 px-4"
+                value={projectData.status}
+                onChange={(e) => handleChange("status", e.target.value)}
+              >
+                <option value="Pending">Pending</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Completed">Completed</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+            </label>
+            <label className="flex flex-col mb-4">
+              <p className="text-white text-base font-medium pb-4">
+                {existingProject? "Assigned Members" : "Assign Members"}
+              </p>
+              <div className="grid grid-cols-3 gap-4">
+                {allMembers.map((member) => (
+                  <div key={member._id} className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id={`member-${member._id}`}
+                      value={member._id}
+                      checked={projectData.assignedMembers.includes(member._id)}
+                      onChange={(e) => {
+                        const isChecked = e.target.checked;
+                        setProjectData((prevData) => ({
+                          ...prevData,
+                          assignedMembers: isChecked
+                            ? [...prevData.assignedMembers, member._id]
+                            : prevData.assignedMembers.filter(
+                                (id) => id !== member._id
+                              ),
+                        }));
+                      }}
+                      className="form-checkbox text-green-500 bg-gray-800 border-gray-700 focus:ring-green-500"
+                    />
+                    <label
+                      htmlFor={`member-${member._id}`}
+                      className="ml-2 text-white text-sm"
+                    >
+                      {member.name}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </label>
+            <label className="flex flex-col mb-4">
+              <p className="text-white text-base font-medium pb-2">
+                Input Type
+              </p>
               <select
                 className="form-input w-full h-12 rounded-lg text-white border border-gray-700 bg-gray-800 focus:border-green-500 focus:ring-2 focus:ring-green-500 placeholder-gray-400 px-4"
                 value={projectData.inputType}
@@ -125,7 +229,9 @@ function AddProjectPage() {
               </select>
             </label>
             <label className="flex flex-col mb-4">
-              <p className="text-white text-base font-medium pb-2">Complexity</p>
+              <p className="text-white text-base font-medium pb-2">
+                Complexity
+              </p>
               <select
                 className="form-input w-full h-12 rounded-lg text-white border border-gray-700 bg-gray-800 focus:border-green-500 focus:ring-2 focus:ring-green-500 placeholder-gray-400 px-4"
                 value={projectData.complexity}
@@ -176,6 +282,7 @@ function AddProjectPage() {
               value={projectData.productionCost}
               onChange={(e) => handleChange("productionCost", e.target.value)}
             />
+            {/* Submit and Cancel Buttons */}
             <div className="flex justify-between mt-8">
               <button
                 type="button"

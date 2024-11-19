@@ -15,7 +15,6 @@ const projectSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-
     title: {
       type: String,
       required: true,
@@ -58,6 +57,21 @@ const projectSchema = new mongoose.Schema(
       required: true,
       min: 0, // Ensures cost is a non-negative value
     },
+    description: {
+      type: String,
+      default: "", // Optional field for project details
+    },
+    status: {
+      type: String,
+      enum: ["Pending", "In Progress", "Completed", "Cancelled"],
+      default: "Pending", // Default project status
+    },
+    assignedMembers: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Member", // Reference to the Member model
+      },
+    ],
   },
   {
     timestamps: true, // Adds createdAt and updatedAt fields

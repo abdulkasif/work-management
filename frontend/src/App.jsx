@@ -13,6 +13,7 @@ import ProtectedRoute from "./context/ProtectedRoute.jsx";
 import ShowClientPage from "./pages/detailpages/ShowClientPage.jsx";
 import ShowMemberPage from "./pages/detailpages/ShowMemberPage.jsx";
 import ShowProjectPage from "./pages/detailpages/ShowProjectPage.jsx";
+import AssignMemberPage from "./pages/assignpges/AssignMemberPage.jsx";
 
 function App() {
   return (
@@ -104,9 +105,15 @@ function App() {
             </ProtectedRoute>
           }
         />
-        
+        <Route
+          path="/assign-project"
+          element={
+            <ProtectedRoute>
+              <AssignMemberPage />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
-      
     </div>
   );
 }

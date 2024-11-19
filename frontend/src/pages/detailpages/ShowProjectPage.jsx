@@ -1,7 +1,15 @@
 import React, { useEffect, useState } from "react";
 import Header from "../../components/Header";
-import { FaIdBadge, FaProjectDiagram, FaBuilding, FaFileAlt, FaEdit, FaTrashAlt } from "react-icons/fa"; // Icons for project fields
+import {
+  FaIdBadge,
+  FaProjectDiagram,
+  FaBuilding,
+  FaFileAlt,
+  FaEdit,
+  FaTrashAlt,
+} from "react-icons/fa"; // Icons for project fields
 import { useNavigate } from "react-router-dom";
+import { format } from "date-fns";
 
 const ShowProjectPage = () => {
   const navigate = useNavigate();
@@ -11,9 +19,8 @@ const ShowProjectPage = () => {
 
   // State for handling modals
   const [deleteConfirmVisible, setDeleteConfirmVisible] = useState(false);
-  const [deleteInput, setDeleteInput] = useState('');
+  const [deleteInput, setDeleteInput] = useState("");
   const [selectedProjectId, setSelectedProjectId] = useState(null);
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -50,9 +57,12 @@ const ShowProjectPage = () => {
   const confirmDelete = async () => {
     if (deleteInput === "Delete") {
       try {
-        const response = await fetch(`http://localhost:8080/api/home/deleteproject/${selectedProjectId}`, {
-          method: "DELETE",
-        });
+        const response = await fetch(
+          `http://localhost:8080/api/home/deleteproject/${selectedProjectId}`,
+          {
+            method: "DELETE",
+          }
+        );
         if (!response.ok) throw new Error(`Error: ${response.statusText}`);
 
         setProjectData(projectData.filter((project) => project._id !== selectedProjectId));
@@ -61,7 +71,7 @@ const ShowProjectPage = () => {
         console.error("Failed to delete project:", error);
       } finally {
         setDeleteConfirmVisible(false);
-        setDeleteInput('');
+        setDeleteInput("");
       }
     } else {
       alert("Please type 'Delete' to confirm.");
@@ -70,13 +80,15 @@ const ShowProjectPage = () => {
 
   const cancelDelete = () => {
     setDeleteConfirmVisible(false);
-    setDeleteInput('');
+    setDeleteInput("");
   };
 
   // Handle Edit
   const handleEdit = (project) => {
-    navigate('/add-project', {state: {project}});
+    navigate("/add-project", { state: { project } });
   };
+
+
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -91,24 +103,25 @@ const ShowProjectPage = () => {
             {projectData.map((project) => (
               <div
                 key={project._id}
-                className="p-6 border-2 border-gray-600 rounded-lg shadow-lg hover:shadow-2xl transition-all duration-300 bg-gray-800"
+                className="p-6 border-2 border-gray-600 rounded-lg shadow-lg hover:shadow-2xl transition-all duration-300 bg-gray-800 relative"
               >
+                
                 <div className="space-y-4">
                   <p className="flex items-center gap-3 text-lg">
-                    <FaIdBadge size={20} /> 
+                    <FaIdBadge size={20} />
                     <strong>ID:</strong> {project.projectId}
                   </p>
                   <p className="flex items-center gap-3 text-lg">
-                    <FaProjectDiagram size={20} /> 
+                    <FaProjectDiagram size={20} />
                     <strong>Client:</strong> {project.clientName}
                   </p>
                   <p className="flex items-center gap-3 text-lg">
-                    <FaBuilding size={20} /> 
+                    <FaBuilding size={20} />
                     <strong>Title:</strong> {project.title}
                   </p>
                   <p className="flex items-center gap-3 text-lg">
-                    <FaFileAlt size={20} /> 
-                    <strong>Pages:</strong> {project.pages}
+                    <FaFileAlt size={20} />
+                    <strong>Due Date:</strong> {format(new Date(project.dueDate), "dd-MM-yyyy")}
                   </p>
                 </div>
                 <div className="flex gap-6 justify-end mt-4">
@@ -116,7 +129,7 @@ const ShowProjectPage = () => {
                     onClick={() => handleEdit(project)}
                     className="text-blue-500 hover:text-blue-700 transition-all duration-200"
                   >
-                    <FaEdit size={24}/>
+                    <FaEdit size={24} />
                   </button>
                   <button
                     onClick={() => handleDelete(project._id)}
