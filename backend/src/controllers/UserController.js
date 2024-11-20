@@ -46,6 +46,7 @@ exports.loginController = async (req, res) => {
                     id: userDoc._id,
                     email: userDoc.email,
                     name: userDoc.name,
+                    designation: userDoc.designation
                 });
             });
         } else {

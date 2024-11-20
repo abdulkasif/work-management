@@ -203,11 +203,11 @@ function AddProjectPage() {
                               ),
                         }));
                       }}
-                      className="form-checkbox text-green-500 bg-gray-800 border-gray-700 focus:ring-green-500"
+                      className="form-checkbox  text-green-500 bg-gray-800 border-gray-700 focus:ring-green-500"
                     />
                     <label
                       htmlFor={`member-${member._id}`}
-                      className="ml-2 text-white text-sm"
+                      className="ml-2 cursor-pointer text-white text-sm"
                     >
                       {member.name}
                     </label>

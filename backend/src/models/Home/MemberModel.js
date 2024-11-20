@@ -31,7 +31,7 @@ const memberSchema = new mongoose.Schema({
   },
   password: { 
     type: String,
-     required: true 
+    required: true 
   },
   mobileNo: {
     type: String,
@@ -75,6 +75,12 @@ const memberSchema = new mongoose.Schema({
     enum: ["Monthly wise with PF", "Monthly wise with ESI"],
     required: true,
   },
+  assignedProject:[ {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Project", // Reference to the Project model
+    default: null, // Initially null until a project is assigned
+  }
+],
 });
 
 module.exports = mongoose.model("Member", memberSchema);
