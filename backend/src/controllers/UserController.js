@@ -46,7 +46,8 @@ exports.loginController = async (req, res) => {
                     id: userDoc._id,
                     email: userDoc.email,
                     name: userDoc.name,
-                    designation: userDoc.designation
+                    designation: userDoc.designation,
+                    memberId: userDoc.memberId
                 });
             });
         } else {

@@ -2,10 +2,11 @@ import { motion } from 'framer-motion';
 import Input from '../components/Input';
 import { Mail, User, Lock } from "lucide-react";
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import PasswordStrengthMeter from '../components/PaswordStrengthMeter';
 
 const SignUpPage = () => {
+  const navigate = useNavigate();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -21,7 +22,7 @@ const SignUpPage = () => {
     })
     if (response.status === 201) {
       alert("Registeration Successful");
-      setRedirect(true);
+      navigate('/')
     } else {
       alert("Registeration Failed");
     }

@@ -14,9 +14,13 @@ const LoginPage = () => {
 
   useEffect(() => {
     // Check if user data exists in localStorage
-    const user = localStorage.getItem("user");
+    const user = JSON.parse(localStorage.getItem("user"));
     if (user) {
-      navigate("/home", { replace: true }); // Redirect to home if user is already logged in
+      if (user.designation === "Member") {
+        navigate("/members-home", { replace: true });
+      } else {
+        navigate("/home", { replace: true }); // Redirect to home if user is already logged in
+      }
     }
   }, [navigate]);
 
@@ -29,17 +33,21 @@ const LoginPage = () => {
         method: "POST",
         body: JSON.stringify({ email, password }),
         headers: { "Content-Type": "application/json" },
-        credentials: "include", // Important to send cookies
       });
 
       if (response.status === 200) {
         const userData = await response.json();
         setUserInfo(userData); // Set user info in context
         localStorage.setItem("user", JSON.stringify(userData)); // Save user data in localStorage
-        navigate("/home"); // Redirect to home
+
+        if (userData?.designation === "Member") {
+          navigate("/members-home", { replace: true });
+        } else {
+          navigate("/home", { replace: true });
+        }
       } else {
         alert("Login failed");
-      } 
+      }
     } catch (error) {
       alert("An error occurred during login");
     } finally {
@@ -78,7 +86,10 @@ const LoginPage = () => {
             />
 
             <div className="flex items-center mb-6">
-              <Link to="/forget-password" className="text-sm text-green-400 hover:underline">
+              <Link
+                to="/forget-password"
+                className="text-sm text-green-400 hover:underline"
+              >
                 Forgot password?
               </Link>
             </div>
@@ -89,7 +100,11 @@ const LoginPage = () => {
               className="w-full py-3 px-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-lg shadow-lg hover:from-green-600 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200"
               type="submit"
             >
-              {isLoading ? <Loader className="w-6 h-6 animate-spin mx-auto" /> : "Login"}
+              {isLoading ? (
+                <Loader className="w-6 h-6 animate-spin mx-auto" />
+              ) : (
+                "Login"
+              )}
             </motion.button>
           </form>
         </div>

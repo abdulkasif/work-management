@@ -33,6 +33,37 @@ const getAllProject = async (req, res) => {
   }
 };
 
+
+const getProjectById = async (req,res) => {
+  try{
+    const projectId = req.params.id;
+
+    const ProjectData = await Project.findById(projectId);
+    
+    if (!ProjectData) {
+      res.status(404).json({success: false, message: "Project can't be found"});
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "ProjectData fetched successfully",
+      data: ProjectData
+    })
+
+  }catch(error){
+    res.status(500).json({
+      success: false,
+      message: "internal error happened",
+      error: error.message
+    })
+
+  }
+}
+
+
+
+
+
 const deleteProjectById = async (req, res) => {
   try {
     const projectId = req.params.id;
@@ -143,6 +174,7 @@ const updateProjectById = async (req, res) => {
 module.exports = {
   createProject,
   getAllProject,
+  getProjectById,
   deleteProjectById,
   updateProjectById,
 };

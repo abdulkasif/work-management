@@ -77,8 +77,7 @@ const memberSchema = new mongoose.Schema({
   },
   assignedProject:[ {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Project", // Reference to the Project model
-    default: null, // Initially null until a project is assigned
+    ref: "Project", // Reference to the Project model // Initially null until a project is assigned
   }
 ],
 });

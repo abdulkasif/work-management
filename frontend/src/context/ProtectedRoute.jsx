@@ -8,6 +8,7 @@ const ProtectedRoute = ({ children }) => {
   if (!userDoc) {
     return <Navigate to="/" replace />;
   }
+  
 
   // If userDoc exists, render the children (protected content)
   return children;

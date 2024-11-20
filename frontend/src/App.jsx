@@ -13,7 +13,7 @@ import ProtectedRoute from "./context/ProtectedRoute.jsx";
 import ShowClientPage from "./pages/detailpages/ShowClientPage.jsx";
 import ShowMemberPage from "./pages/detailpages/ShowMemberPage.jsx";
 import ShowProjectPage from "./pages/detailpages/ShowProjectPage.jsx";
-import AssignMemberPage from "./pages/assignpges/AssignMemberPage.jsx";
+import MemberHomePage from "./pages/assignpages/MemberHomePage.jsx";
 
 function App() {
   return (
@@ -106,10 +106,10 @@ function App() {
           }
         />
         <Route
-          path="/assign-project"
+          path="/members-home"
           element={
             <ProtectedRoute>
-              <AssignMemberPage />
+              <MemberHomePage/>
             </ProtectedRoute>
           }
         />
