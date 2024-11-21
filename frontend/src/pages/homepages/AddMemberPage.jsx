@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import Header from "../../components/Header"; // Adjust the path as necessary
-import PasswordStrengthMeter from "../../components/PasswordStrengthMeter";
-import { useLocation, useNavigate } from "react-router-dom"; // Import useLocation hook
+import PaswordStrengthMeter from "../../components/PaswordStrengthMeter";
+import { useLocation, useNavigate } from "react-router-dom";
 
 function AddMemberPage() {
   const navigate = useNavigate();
-  const location = useLocation(); // Access location object to get data from navigation
-  const existingMember = location.state?.member; // Get existing member data if available
+  const location = useLocation();
+  const existingMember = location.state?.member;
 
   const initialFormData = {
     id: existingMember?.id || "",
@@ -31,12 +31,10 @@ function AddMemberPage() {
   const [isPasswordFocused, setIsPasswordFocused] = useState(false);
   const [changedFields, setChangedFields] = useState({});
 
-  // Handle input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
 
-    // Track changes
     if (value !== initialFormData[name]) {
       setChangedFields((prev) => ({ ...prev, [name]: value }));
     } else {
@@ -61,7 +59,7 @@ function AddMemberPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData), // Send as JSON
+        body: JSON.stringify(formData),
       });
 
       if (response.ok) {
@@ -152,11 +150,10 @@ function AddMemberPage() {
                 className="form-input w-full h-12 rounded-lg text-white border border-gray-700 bg-gray-800 focus:border-green-500 focus:ring-2 focus:ring-green-500 placeholder-gray-400 px-4"
               />
               {isPasswordFocused && (
-                <PasswordStrengthMeter password={formData.password} />
+                <PaswordStrengthMeter password={formData.password} />
               )}
             </label>
-            {/* Other Input Fields */}
-            {/* ... (similar to above) */}
+
             <div className="flex justify-end mt-6">
               <button
                 type="button"
@@ -193,6 +190,35 @@ const InputField = ({ label, name, placeholder, value, onChange, type = "text" }
   </label>
 );
 
-// Other components (TextArea, SelectField, etc.) remain the same
+const SelectField = ({ label, name, options, value, onChange }) => (
+  <label className="flex flex-col mb-4">
+    <p className="text-white text-base font-medium pb-2">{label}</p>
+    <select
+      name={name}
+      value={value}
+      onChange={onChange}
+      className="form-select w-full h-12 rounded-lg text-white border border-gray-700 bg-gray-800 focus:border-green-500 focus:ring-2 focus:ring-green-500 px-4"
+    >
+      {options.map((option) => (
+        <option key={option} value={option}>
+          {option}
+        </option>
+      ))}
+    </select>
+  </label>
+);
+
+const TextArea = ({ label, name, placeholder, value, onChange }) => (
+  <label className="flex flex-col mb-4">
+    <p className="text-white text-base font-medium pb-2">{label}</p>
+    <textarea
+      name={name}
+      placeholder={placeholder}
+      value={value}
+      onChange={onChange}
+      className="form-textarea w-full h-24 rounded-lg text-white border border-gray-700 bg-gray-800 focus:border-green-500 focus:ring-2 focus:ring-green-500 placeholder-gray-400 px-4"
+    />
+  </label>
+);
 
 export default AddMemberPage;
