@@ -21,45 +21,20 @@ function App() {
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<LoginPage />} />
-        <Route path="/signup" element={<SignUpPage />} />
-
+        
         {/* Protected Routes */}
         <Route
           path="/home"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedDesignations={["Team Lead", "Member", "Manager"]}>
               <Home />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/emailverification"
-          element={
-            <ProtectedRoute>
-              <EmailVerificationPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/reset-password"
-          element={
-            <ProtectedRoute>
-              <ResetPagePassword />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/forget-password"
-          element={
-            <ProtectedRoute>
-              <ForgetPasswordPage />
             </ProtectedRoute>
           }
         />
         <Route
           path="/add-client"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedDesignations={["Manager"]}>
               <AddClientPage />
             </ProtectedRoute>
           }
@@ -67,7 +42,7 @@ function App() {
         <Route
           path="/add-project"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedDesignations={["Team Lead", "Manager"]}>
               <AddProjectPage />
             </ProtectedRoute>
           }
@@ -75,7 +50,7 @@ function App() {
         <Route
           path="/add-member"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedDesignations={["Team Lead", "Manager"]}>
               <AddMemberPage />
             </ProtectedRoute>
           }
@@ -83,7 +58,7 @@ function App() {
         <Route
           path="/clients"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedDesignations={["Manager"]}>
               <ShowClientPage />
             </ProtectedRoute>
           }
@@ -91,16 +66,15 @@ function App() {
         <Route
           path="/members"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedDesignations={["Team Lead", "Manager"]}>
               <ShowMemberPage />
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/projects"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedDesignations={["Team Lead", "Manager"]}>
               <ShowProjectPage />
             </ProtectedRoute>
           }
@@ -108,8 +82,8 @@ function App() {
         <Route
           path="/members-home"
           element={
-            <ProtectedRoute>
-              <MemberHomePage/>
+            <ProtectedRoute allowedDesignations={["Member"]}>
+              <MemberHomePage />
             </ProtectedRoute>
           }
         />

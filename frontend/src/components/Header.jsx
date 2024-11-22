@@ -7,6 +7,7 @@ import ProfilePicture from './ProfilePicture';
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isTeamLead, setIsTeamLead] = useState(false);
+  const [isMember, setIsMember] = useState(false);
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
@@ -15,6 +16,9 @@ const Header = () => {
     if (user.designation === 'Team Lead') {
       setIsTeamLead(true);
     }
+    if(user.designation === 'Member'){
+      setIsMember(true);
+    }
   }, []);
 
   const navigationItems = ['Home', 'Clients', 'Members', 'Projects', 'Invoices'];
@@ -22,7 +26,7 @@ const Header = () => {
   return (
     <header className="flex items-center justify-between border-b border-solid border-b-[#293238] bg-[#222222] px-6 py-3 md:px-10">
       {/* Logo */}
-      <h2 className="text-white text-lg font-bold">Acme Co</h2>
+      <h2 className="text-white text-lg font-bold">Marine Apps</h2>
 
       {/* Left Section: Search Bar and Hamburger Menu */}
       <div className="flex items-center gap-4 md:hidden">
@@ -49,6 +53,7 @@ const Header = () => {
             <ProfilePicture />
           </li>
           {navigationItems.map((item) => {
+            if (isMember) return null;
             if (isTeamLead && item === 'Clients') return null;
             return (
               <li key={item}>
