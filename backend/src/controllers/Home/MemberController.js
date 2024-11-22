@@ -90,12 +90,12 @@ exports.getMemberById = async (req,res) => {
 
 exports.deleteMemberById = async (req, res) => {
   try {
-    const memberId = req.params.id;
+    const memberID = req.params.id;
     const { email } = req.body; // Extract the email from the request body
 
     // Assuming you are using email to identify the member for deletion
-    const deletedMember = await Member.findByIdAndDelete(memberId);
-    const deletedUser = await User.findOneAndDelete({email: email});
+    const deletedMember = await Member.findByIdAndDelete(memberID);
+    const deletedUser = await User.findOneAndDelete({memberId: memberID});
 
     if (!deletedMember) {
       return res.status(404).json({ success: false, message: 'Member not found or email mismatch' });

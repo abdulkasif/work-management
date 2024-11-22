@@ -61,10 +61,13 @@ function AddClientPage() {
 
   const confirmChanges = async () => {
     setConfirmationVisible(false);
-    const url = `http://localhost:8080/api/home/editclient/${existingClient._id}`;
+    
+    const method = existingClient ? "PUT" : "POST" 
+
+    const url = existingClient ? `http://localhost:8080/api/home/editclient/${existingClient._id}`: 'http://localhost:8080/api/home/client';
     try {
       const response = await fetch(url, {
-        method: "PUT",
+        method,
         headers: {
           "Content-Type": "application/json",
         },
@@ -72,7 +75,7 @@ function AddClientPage() {
       });
 
       if (response.ok) {
-        alert("Client updated successfully!");
+       
         navigate('/clients');
       } else {
         console.error("Failed to update client data");
@@ -170,7 +173,7 @@ function AddClientPage() {
                 onClick={handleEditChanges}
                 className="flex-1 ml-2 py-3 bg-green-600 text-white rounded-lg font-bold hover:bg-green-500 transition duration-200"
               >
-                Edit Changes
+                {existingClient ? "Edit Changes" : "Add Client"}
               </button>
             </div>
           </form>

@@ -41,10 +41,13 @@ function AddProjectPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/home/getmember", {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-        });
+        const response = await fetch(
+          "http://localhost:8080/api/home/getmember",
+          {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+          }
+        );
 
         if (!response.ok) {
           throw new Error(`Error: ${response.statusText}`);
@@ -119,7 +122,7 @@ function AddProjectPage() {
 
   const memberOptions = allMembers.map((member) => ({
     value: member._id,
-    label: member.name,
+    label: member.name + " - " + member.designation,
   }));
 
   return (
@@ -151,7 +154,9 @@ function AddProjectPage() {
               value={projectData.title}
               onChange={(e) => handleChange("title", e.target.value)}
             />
-            <label className="block text-white font-medium mb-2">Assign Members</label>
+            <label className="block text-white font-medium mb-2">
+              Assign Members
+            </label>
             <Select
               isMulti
               options={memberOptions}
@@ -198,25 +203,43 @@ function AddProjectPage() {
           </form>
         </div>
       </div>
+
+      {/* Confirmation Modal */}
       {showChangesModal && (
-        <ConfirmationModals
-          message={
-            <div>
-              <h3 className="font-bold mb-4 text-xl">Review Changes</h3>
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
+          <div className="bg-gray-800 p-6 rounded-lg w-96">
+            <h3 className="text-xl text-center mb-4 text-green-500">
+              Review Changes
+            </h3>
+            <ul className="text-white mb-4">
               {Object.entries(changedFields).length > 0 ? (
-                Object.entries(changedFields).map(([field, { old, new: newValue }]) => (
-                  <p key={field} className="mb-2 text-white">
-                    <strong>{field}:</strong> {old} → {newValue}
-                  </p>
-                ))
+                Object.entries(changedFields).map(
+                  ([field, { old, new: newValue }]) => (
+                    <li key={field} className="mb-2">
+                      <strong>{field}:</strong> {old} → {newValue}
+                    </li>
+                  )
+                )
               ) : (
                 <p className="text-white">No changes made.</p>
               )}
+            </ul>
+            <div className="flex justify-between">
+              <button
+                onClick={() => setShowChangesModal(false)}
+                className="bg-gray-600 text-white px-4 py-2 rounded"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSubmit}
+                className="bg-green-600 text-white px-4 py-2 rounded"
+              >
+                Confirm
+              </button>
             </div>
-          }
-          onConfirm={handleSubmit}
-          onCancel={() => setShowChangesModal(false)}
-        />
+          </div>
+        </div>
       )}
     </div>
   );

@@ -16,33 +16,42 @@ function FetchMemberDetails() {
   const itemsPerPage = 5;
 
   useEffect(() => {
+
     const fetchData = async () => {
-      const response = await fetch(
-        `http://localhost:8080/api/home/getmemberbyid/${memberId}`,
-        {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`Error: ${response.statusText}`);
-      }
-      const result = await response.json();
-
-      if (result.success) {
-        setMemberData(result.data);
-        const projectIds = result.data.assignedProject;
-        const projectDataPromises = projectIds.map((projectId) =>
-          fetch(
-            `http://localhost:8080/api/home/getprojectbyid/${projectId}`
-          ).then((res) => res.json())
+      try{
+        const response = await fetch(
+          `http://localhost:8080/api/home/getmemberbyid/${memberId}`,
+          {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+          }
         );
-        const projectData = await Promise.all(projectDataPromises);
-        setAssignedProjects(projectData.map((response) => response.data));
-      }
+        if (!response.ok) {
+          throw new Error(`Error: ${response.statusText}`);
+        }
+        const result = await response.json();
+  
+        if (result.success) {
+          setMemberData(result.data);
+          const projectIds = result.data.assignedProject;
+          const projectDataPromises = projectIds.map((projectId) =>
+            fetch(
+              `http://localhost:8080/api/home/getprojectbyid/${projectId}`
+            ).then((res) => res.json())
+          );
+          const projectData = await Promise.all(projectDataPromises);
+          setAssignedProjects(projectData.map((response) => response.data));
+        }
+  
+        setLoading(false);
 
-      setLoading(false);
+      }catch(error){
+        console.error(error);
+        
+      }
+      
+
+     
     };
 
     fetchData();
