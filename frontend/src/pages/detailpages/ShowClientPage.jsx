@@ -6,6 +6,7 @@ import {
   FaPhone,
   FaTrashAlt,
   FaEdit,
+  FaHome,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
@@ -22,7 +23,7 @@ const ShowClientPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/home/getclient", {
+        const response = await fetch("https://rjvn06q4-8080.inc1.devtunnels.ms/api/home/getclient", {
           method: "GET",
           headers: { "Content-Type": "application/json" },
         });
@@ -54,7 +55,7 @@ const ShowClientPage = () => {
   const handleDelete = async (clientId) => {
     try {
       const response = await fetch(
-        `http://localhost:8080/api/home/deleteclient/${clientId}`,
+        `https://rjvn06q4-8080.inc1.devtunnels.ms/api/home/deleteclient/${clientId}`,
         { method: "DELETE" }
       );
 
@@ -88,13 +89,13 @@ const ShowClientPage = () => {
             
             <div
               key={client._id}
-              className="p-10 border-2 border-gray-600 rounded-lg shadow-lg bg-gray-800 hover:shadow-2xl transition-all duration-300"
+              className="p-10 cursor-pointer border-2 border-gray-600 rounded-lg shadow-lg bg-gray-800 hover:shadow-2xl transition-all duration-300"
               onClick={() => handleCardClick(client._id)} // Card click handler
             >
               {/* Header of the card with Edit/Delete buttons */}
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-center ">
                 <p className="text-lg font-semibold text-gray-300">
-                  {client.clientName}
+                 {client.clientId} - {client.clientName}
                 </p>
                 <div className="flex gap-4">
                   {/* Edit button */}
@@ -123,10 +124,7 @@ const ShowClientPage = () => {
               {/* Show Client Details when expanded */}
               {expandedClient === client._id && (
                 <div className="space-y-3 mt-4">
-                  <p className="flex items-center gap-4 text-lg text-gray-300">
-                    <FaIdBadge className="text-emerald-500" />
-                    <strong>ID:</strong> {client.clientId}
-                  </p>
+                  
                   <p className="flex items-center gap-4 text-lg text-gray-300">
                     <FaEnvelope className="text-emerald-500" />
                     <strong>Email:</strong> {client.email}
@@ -134,6 +132,10 @@ const ShowClientPage = () => {
                   <p className="flex items-center gap-4 text-lg text-gray-300">
                     <FaPhone className="text-emerald-500" />
                     <strong>Phone:</strong> {client.phone}
+                  </p>
+                  <p className="flex items-center gap-4 text-lg text-gray-300">
+                    <FaHome className="text-emerald-500" />
+                    <strong>Address:</strong> {client.address}
                   </p>
                 </div>
               )}

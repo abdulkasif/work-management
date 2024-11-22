@@ -13,14 +13,14 @@ function FetchMemberDetails() {
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+  const itemsPerPage = 3;
 
   useEffect(() => {
 
     const fetchData = async () => {
       try{
         const response = await fetch(
-          `http://localhost:8080/api/home/getmemberbyid/${memberId}`,
+          `https://rjvn06q4-8080.inc1.devtunnels.ms/api/home/getmemberbyid/${memberId}`,
           {
             method: "GET",
             headers: { "Content-Type": "application/json" },
@@ -36,7 +36,7 @@ function FetchMemberDetails() {
           const projectIds = result.data.assignedProject;
           const projectDataPromises = projectIds.map((projectId) =>
             fetch(
-              `http://localhost:8080/api/home/getprojectbyid/${projectId}`
+              `https://rjvn06q4-8080.inc1.devtunnels.ms/api/home/getprojectbyid/${projectId}`
             ).then((res) => res.json())
           );
           const projectData = await Promise.all(projectDataPromises);
@@ -163,14 +163,14 @@ function FetchMemberDetails() {
               )}
             </div>
           ))}
-          <div className="flex justify-between mt-4">
+          <div className="flex justify-center gap-2 mt-4">
             {Array.from({ length: totalPages }, (_, i) => (
               <button
                 key={i}
                 onClick={() => handlePageChange(i + 1)}
                 className={`px-4 py-2 rounded-lg ${
                   currentPage === i + 1
-                    ? "bg-green-500 text-white"
+                    ? "bg-emerald-500 text-white"
                     : "bg-gray-600 text-gray-200"
                 }`}
               >

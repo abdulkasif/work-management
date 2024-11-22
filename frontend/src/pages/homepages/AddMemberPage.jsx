@@ -60,8 +60,8 @@ function AddMemberPage() {
     // Submit the form data to the server
     const method = existingMember ? "PUT" : "POST";
     const url = existingMember
-      ? `http://localhost:8080/api/home/editmember/${existingMember._id}`
-      : "http://localhost:8080/api/home/member";
+      ? `https://rjvn06q4-8080.inc1.devtunnels.ms/api/home/editmember/${existingMember._id}`
+      : "https://rjvn06q4-8080.inc1.devtunnels.ms/api/home/member";
 
     try {
       const response = await fetch(url, {

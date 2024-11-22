@@ -42,7 +42,7 @@ function AddProjectPage() {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          "http://localhost:8080/api/home/getmember",
+          "https://rjvn06q4-8080.inc1.devtunnels.ms/api/home/getmember",
           {
             method: "GET",
             headers: { "Content-Type": "application/json" },
@@ -99,8 +99,8 @@ function AddProjectPage() {
 
   const handleSubmit = async () => {
     const url = existingProject
-      ? `http://localhost:8080/api/home/editproject/${existingProject._id}`
-      : `http://localhost:8080/api/home/project`;
+      ? `https://rjvn06q4-8080.inc1.devtunnels.ms/api/home/editproject/${existingProject._id}`
+      : `https://rjvn06q4-8080.inc1.devtunnels.ms/api/home/project`;
     const method = existingProject ? "PUT" : "POST";
 
     try {

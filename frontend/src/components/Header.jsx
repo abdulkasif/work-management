@@ -21,7 +21,7 @@ const Header = () => {
     }
   }, []);
 
-  const navigationItems = ['Home', 'Clients', 'Members', 'Projects', 'Invoices'];
+  const navigationItems = ['Home', 'Clients', 'Members', 'Projects'];
 
   return (
     <header className="flex items-center justify-between border-b border-solid border-b-[#293238] bg-[#222222] px-6 py-3 md:px-10">

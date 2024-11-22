@@ -12,7 +12,7 @@ const ProfilePicture = () => {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch('http://localhost:8080/api/users/logout', {
+      const response = await fetch('https://rjvn06q4-8080.inc1.devtunnels.ms/api/users/logout', {
         method: 'POST',
         credentials: 'include' // This ensures cookies are sent with the request
       });

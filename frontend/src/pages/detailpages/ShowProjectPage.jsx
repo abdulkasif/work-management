@@ -7,7 +7,10 @@ import {
   FaFileAlt,
   FaEdit,
   FaTrashAlt,
+  FaBook,
+  FaClock,
 } from "react-icons/fa"; // Icons for project fields
+import { BiSolidCommentDetail } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 
@@ -23,7 +26,7 @@ const ShowProjectPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/home/getproject", {
+        const response = await fetch("https://rjvn06q4-8080.inc1.devtunnels.ms/api/home/getproject", {
           method: "GET",
           headers: { "Content-Type": "application/json" },
         });
@@ -50,7 +53,7 @@ const ShowProjectPage = () => {
   const handleDelete = async (projectId) => {
     try {
       const response = await fetch(
-        `http://localhost:8080/api/home/deleteproject/${projectId}`,
+        `https://rjvn06q4-8080.inc1.devtunnels.ms/api/home/deleteproject/${projectId}`,
         {
           method: "DELETE",
         }
@@ -95,27 +98,27 @@ const ShowProjectPage = () => {
                 onClick={() => handleCardClick(project._id)} // Card click handler
               >
                 {/* Title and Client Name */}
-                <p className="text-lg font-bold">{project.title}</p>
+                <p className="text-lg font-bold">{project.projectId} - {project.title}</p>
                 <p className="text-md">{project.clientName}</p>
 
                 {/* Show details when the card is expanded */}
                 {expandedProject === project._id && (
                   <div className="space-y-4 mt-4">
                     <div className="flex items-center gap-3 text-lg">
-                      <FaIdBadge size={20} />
-                      <strong>ID:</strong> {project.projectId}
-                    </div>
-                    <div className="flex items-center gap-3 text-lg">
-                      <FaProjectDiagram size={20} />
-                      <strong>Client:</strong> {project.clientName}
-                    </div>
-                    <div className="flex items-center gap-3 text-lg">
                       <FaBuilding size={20} />
                       <strong>Title:</strong> {project.title}
                     </div>
                     <div className="flex items-center gap-3 text-lg">
-                      <FaFileAlt size={20} />
-                      <strong>Due Date:</strong> {format(new Date(project.dueDate), "dd-MM-yyyy")}
+                      <BiSolidCommentDetail size={20} />
+                      <strong>Description:</strong> {project.description}
+                    </div>
+                    <div className="flex items-center gap-3 text-lg">
+                      <FaBook size={20} />
+                      <strong>Pages & Complexity:</strong> {project.pages} pages & {project.complexity}
+                    </div>
+                    <div className="flex items-center gap-3 text-lg">
+                      <FaClock size={20} />
+                      <strong>Received & Due Date:</strong> {format(new Date(project.receivedDate), "dd-MM-yyyy")}  To {format(new Date(project.dueDate), "dd-MM-yyyy")}   
                     </div>
 
                     {/* Edit/Delete Buttons */}
