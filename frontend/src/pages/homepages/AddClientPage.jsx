@@ -64,7 +64,7 @@ function AddClientPage() {
     
     const method = existingClient ? "PUT" : "POST" 
 
-    const url = existingClient ? `https://rjvn06q4-8080.inc1.devtunnels.ms/api/home/editclient/${existingClient._id}`: 'https://rjvn06q4-8080.inc1.devtunnels.ms/api/home/client';
+    const url = existingClient ? `http://localhost:8080/api/home/editclient/${existingClient._id}`: 'http://localhost:8080/api/home/client';
     try {
       const response = await fetch(url, {
         method,
@@ -162,7 +162,7 @@ function AddClientPage() {
 
             <div className="flex justify-between mt-8">
               <button
-                type="button"
+                type="button" 
                 onClick={() => navigate('/home')}
                 className="flex-1 mr-2 py-3 bg-gray-700 text-white rounded-lg font-bold hover:bg-gray-600 transition duration-200"
               >

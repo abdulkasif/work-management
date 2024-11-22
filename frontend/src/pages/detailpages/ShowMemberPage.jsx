@@ -31,7 +31,7 @@ const ShowMemberPage = () => {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          "https://rjvn06q4-8080.inc1.devtunnels.ms/api/home/getmember",
+          "http://localhost:8080/api/home/getmember",
           {
             method: "GET",
             headers: { "Content-Type": "application/json" },
@@ -63,7 +63,7 @@ const ShowMemberPage = () => {
       try {
         const response = await fetch(
           `
-          https://rjvn06q4-8080.inc1.devtunnels.ms/api/home/deletemember/${selectedMemberId}`,
+          http://localhost:8080/api/home/deletemember/${selectedMemberId}`,
           {
             method: "DELETE",
             headers: {

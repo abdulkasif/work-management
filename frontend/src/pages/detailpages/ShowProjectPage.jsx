@@ -26,7 +26,7 @@ const ShowProjectPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("https://rjvn06q4-8080.inc1.devtunnels.ms/api/home/getproject", {
+        const response = await fetch("http://localhost:8080/api/home/getproject", {
           method: "GET",
           headers: { "Content-Type": "application/json" },
         });
@@ -53,7 +53,7 @@ const ShowProjectPage = () => {
   const handleDelete = async (projectId) => {
     try {
       const response = await fetch(
-        `https://rjvn06q4-8080.inc1.devtunnels.ms/api/home/deleteproject/${projectId}`,
+        `http://localhost:8080/api/home/deleteproject/${projectId}`,
         {
           method: "DELETE",
         }

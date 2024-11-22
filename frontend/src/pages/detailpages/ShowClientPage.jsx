@@ -23,7 +23,7 @@ const ShowClientPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("https://rjvn06q4-8080.inc1.devtunnels.ms/api/home/getclient", {
+        const response = await fetch("http://localhost:8080/api/home/getclient", {
           method: "GET",
           headers: { "Content-Type": "application/json" },
         });
@@ -55,7 +55,7 @@ const ShowClientPage = () => {
   const handleDelete = async (clientId) => {
     try {
       const response = await fetch(
-        `https://rjvn06q4-8080.inc1.devtunnels.ms/api/home/deleteclient/${clientId}`,
+        `http://localhost:8080/api/home/deleteclient/${clientId}`,
         { method: "DELETE" }
       );
 

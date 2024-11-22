@@ -20,7 +20,7 @@ function FetchMemberDetails() {
     const fetchData = async () => {
       try{
         const response = await fetch(
-          `https://rjvn06q4-8080.inc1.devtunnels.ms/api/home/getmemberbyid/${memberId}`,
+          `http://localhost:8080/api/home/getmemberbyid/${memberId}`,
           {
             method: "GET",
             headers: { "Content-Type": "application/json" },
@@ -36,7 +36,7 @@ function FetchMemberDetails() {
           const projectIds = result.data.assignedProject;
           const projectDataPromises = projectIds.map((projectId) =>
             fetch(
-              `https://rjvn06q4-8080.inc1.devtunnels.ms/api/home/getprojectbyid/${projectId}`
+              `http://localhost:8080/api/home/getprojectbyid/${projectId}`
             ).then((res) => res.json())
           );
           const projectData = await Promise.all(projectDataPromises);

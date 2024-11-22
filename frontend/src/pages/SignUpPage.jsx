@@ -15,7 +15,7 @@ const SignUpPage = () => {
 
   const handleSignUp = async (e) => {
     e.preventDefault();
-    const response = await fetch('https://rjvn06q4-8080.inc1.devtunnels.ms/api/users/register', {
+    const response = await fetch('http://localhost:8080/api/users/register', {
       method: 'POST',
       body: JSON.stringify({ name, email , password , designation }),
       headers: { 'Content-Type': 'application/json' },
