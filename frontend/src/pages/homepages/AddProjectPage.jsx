@@ -4,7 +4,6 @@ import Input_product from "../../components/homecomponents/Input_product";
 import { FiCalendar, FiDollarSign, FiFileText, FiHash } from "react-icons/fi";
 import { useLocation, useNavigate } from "react-router-dom";
 import { format } from "date-fns";
-import ConfirmationModals from "../../components/ConfirmationModals";
 import Select from "react-select";
 
 function AddProjectPage() {
@@ -18,6 +17,8 @@ function AddProjectPage() {
     clientName: existingProject?.clientName || "",
     title: existingProject?.title || "",
     pages: existingProject?.pages || "",
+    description: existingProject?.description || "",
+    status: existingProject?.status || "Pending",
     inputType: existingProject?.inputType || "Physical",
     complexity: existingProject?.complexity || "Easy",
     receivedDate: existingProject?.receivedDate
@@ -29,25 +30,61 @@ function AddProjectPage() {
     clientCost: existingProject?.clientCost || "",
     outsourceCost: existingProject?.outsourceCost || "",
     productionCost: existingProject?.productionCost || "",
-    description: existingProject?.description || "",
-    status: existingProject?.status || "Pending",
     assignedMembers: existingProject?.assignedMembers || [],
   });
 
   const [allMembers, setAllMembers] = useState([]);
-  const [changedFields, setChangedFields] = useState({});
-  const [showChangesModal, setShowChangesModal] = useState(false);
+  const selectStyles = {
+    control: (provided) => ({
+      ...provided,
+      backgroundColor: "#1F2937",
+      // borderColor: "#10B981",
+      color: "white",
+      boxShadow: "none",
+      "&:hover": {
+        borderColor: "#10B981",
+      },
+    }),
+    menu: (provided) => ({
+      ...provided,
+      backgroundColor: "#1F2937",
+      color: "white",
+    }),
+    option: (provided, state) => ({
+      ...provided,
+      backgroundColor: state.isFocused ? "#10B981" : "#1F2937",
+      color: state.isFocused ? "#FFFFFF" : "#D1D5DB",
+    }),
+    singleValue: (provided) => ({
+      ...provided,
+      color: "#FFFFFF",
+    }),
+    multiValue: (provided) => ({
+      ...provided,
+      backgroundColor: "#10B981",
+      color: "#FFFFFF",
+    }),
+    multiValueLabel: (provided) => ({
+      ...provided,
+      color: "#FFFFFF",
+    }),
+    multiValueRemove: (provided) => ({
+      ...provided,
+      color: "#FFFFFF",
+      "&:hover": {
+        backgroundColor: "#065F46",
+        color: "#FFFFFF",
+      },
+    }),
+  };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(
-          "http://localhost:8080/api/home/getmember",
-          {
-            method: "GET",
-            headers: { "Content-Type": "application/json" },
-          }
-        );
+        const response = await fetch("http://localhost:8080/api/home/getmember", {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        });
 
         if (!response.ok) {
           throw new Error(`Error: ${response.statusText}`);
@@ -68,33 +105,12 @@ function AddProjectPage() {
   }, []);
 
   const handleChange = (field, value) => {
-    setProjectData((prevData) => {
-      const updatedData = { ...prevData, [field]: value };
-
-      if (existingProject && existingProject[field] !== value) {
-        setChangedFields((prevFields) => ({
-          ...prevFields,
-          [field]: { old: existingProject[field] || "N/A", new: value },
-        }));
-      } else {
-        setChangedFields((prevFields) => {
-          const updatedFields = { ...prevFields };
-          delete updatedFields[field];
-          return updatedFields;
-        });
-      }
-
-      return updatedData;
-    });
+    setProjectData((prevData) => ({ ...prevData, [field]: value }));
   };
 
   const handleAssignedMembersChange = (selectedOptions) => {
     const selectedIds = selectedOptions.map((option) => option.value);
-    setProjectData((prevData) => ({
-      ...prevData,
-      assignedMembers: selectedIds,
-    }));
-    handleChange("assignedMembers", selectedIds);
+    setProjectData((prevData) => ({ ...prevData, assignedMembers: selectedIds }));
   };
 
   const handleSubmit = async () => {
@@ -122,14 +138,14 @@ function AddProjectPage() {
 
   const memberOptions = allMembers.map((member) => ({
     value: member._id,
-    label: member.name + " - " + member.designation,
+    label: `${member.name} - ${member.designation}`,
   }));
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-900">
       <Header />
       <div className="flex-grow flex items-center justify-center p-4">
-        <div className="max-w-lg w-full bg-gray-800 bg-opacity-50 p-8 rounded-lg shadow-lg backdrop-filter backdrop-blur-xl">
+        <div className="max-w-2xl w-full bg-gray-800 bg-opacity-50 p-8 rounded-lg shadow-lg backdrop-filter backdrop-blur-xl">
           <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text">
             {existingProject ? "Edit Project" : "New Project"}
           </h2>
@@ -140,6 +156,12 @@ function AddProjectPage() {
               icon={<FiHash />}
               value={projectData.projectId}
               onChange={(e) => handleChange("projectId", e.target.value)}
+            />
+               <Input_product
+              label="Client ID"
+              placeholder="AB123"
+              value={projectData.clientId}
+              onChange={(e) => handleChange("clientId", e.target.value)}
             />
             <Input_product
               label="Client Name"
@@ -154,93 +176,126 @@ function AddProjectPage() {
               value={projectData.title}
               onChange={(e) => handleChange("title", e.target.value)}
             />
-            <label className="block text-white font-medium mb-2">
-              Assign Members
-            </label>
-            <Select
-              isMulti
-              options={memberOptions}
-              value={memberOptions.filter((option) =>
-                projectData.assignedMembers.includes(option.value)
-              )}
-              onChange={handleAssignedMembersChange}
-              placeholder="Search and select members"
-              className="react-select-container"
-              classNamePrefix="react-select"
+            <Input_product
+              label="Number of Pages"
+              placeholder="200"
+              value={projectData.pages}
+              onChange={(e) => handleChange("pages", e.target.value)}
+            />
+
+            <Input_product
+              label="Description"
+              type="textarea"
+              placeholder="Add a brief description of the project..."
+              value={projectData.description}
+              onChange={(e) => handleChange("description", e.target.value)}
             />
             <Input_product
               label="Received Date"
-              placeholder="MM/DD/YYYY"
-              icon={<FiCalendar />}
               type="date"
+              icon={<FiCalendar />}
               value={projectData.receivedDate}
               onChange={(e) => handleChange("receivedDate", e.target.value)}
             />
             <Input_product
+              label="Due Date"
+              type="date"
+              icon={<FiCalendar />}
+              value={projectData.dueDate}
+              onChange={(e) => handleChange("dueDate", e.target.value)}
+            />
+    
+            {/* Dropdowns */}
+            <label className="block text-white font-medium">Status</label>
+            <Select
+              options={[
+                { value: "Pending", label: "Pending" },
+                { value: "In Progress", label: "In Progress" },
+                { value: "Completed", label: "Completed" },
+                { value: "Cancelled", label: "Cancelled" },
+              ]}
+              styles={selectStyles}
+              value={{ value: projectData.status, label: projectData.status }}
+              onChange={(selectedOption) => handleChange("status", selectedOption.value)}
+            />
+
+            <label className="block text-white font-medium">Input Type</label>
+            <Select
+              options={[
+                { value: "Physical", label: "Physical" },
+                { value: "Digital", label: "Digital" },
+              ]}
+              styles={selectStyles}
+              value={{ value: projectData.inputType, label: projectData.inputType }}
+              onChange={(selectedOption) => handleChange("inputType", selectedOption.value)}
+            />
+
+            <label className="block text-white font-medium">Complexity</label>
+            <Select
+              options={[
+                { value: "Easy", label: "Easy" },
+                { value: "Medium", label: "Medium" },
+                { value: "Hard", label: "Hard" },
+              ]}
+              styles={selectStyles}
+              value={{ value: projectData.complexity, label: projectData.complexity }}
+              onChange={(selectedOption) => handleChange("complexity", selectedOption.value)}
+            />
+
+            <label className="block text-white font-medium">Assign Members</label>
+            <Select
+              isMulti
+              options={memberOptions}
+              styles={selectStyles}
+              value={memberOptions.filter((option) =>
+                projectData.assignedMembers.includes(option.value)
+              )}
+              onChange={handleAssignedMembersChange}
+              placeholder="Assign team members..."
+            />
+
+            {/* Costs */}
+            <Input_product
               label="Client Cost"
-              placeholder="$500"
+              placeholder="e.g., 5000"
               icon={<FiDollarSign />}
-              type="number"
               value={projectData.clientCost}
               onChange={(e) => handleChange("clientCost", e.target.value)}
             />
-            <div className="flex justify-between mt-8">
+            <Input_product
+              label="Outsource Cost"
+              placeholder="e.g., 2000"
+              icon={<FiDollarSign />}
+              value={projectData.outsourceCost}
+              onChange={(e) => handleChange("outsourceCost", e.target.value)}
+            />
+            <Input_product
+              label="Production Cost"
+              placeholder="e.g., 3000"
+              icon={<FiDollarSign />}
+              value={projectData.productionCost}
+              onChange={(e) => handleChange("productionCost", e.target.value)}
+            />
+
+            <div className="flex justify-end space-x-4">
               <button
                 type="button"
-                onClick={() => navigate("/projects")}
-                className="flex-1 mr-2 py-3 bg-gray-700 text-white rounded-lg font-bold hover:bg-gray-600 transition duration-200"
+                onClick={() => navigate(-1)}
+                className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded"
               >
                 Cancel
               </button>
               <button
                 type="button"
-                onClick={() => setShowChangesModal(true)}
-                className="flex-1 ml-2 py-3 bg-green-600 text-white rounded-lg font-bold hover:bg-green-500 transition duration-200"
+                onClick={handleSubmit}
+                className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded"
               >
-                Edit Changes
+                {existingProject ? "Save Changes" : "Add Project"}
               </button>
             </div>
           </form>
         </div>
       </div>
-
-      {/* Confirmation Modal */}
-      {showChangesModal && (
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
-          <div className="bg-gray-800 p-6 rounded-lg w-96">
-            <h3 className="text-xl text-center mb-4 text-green-500">
-              Review Changes
-            </h3>
-            <ul className="text-white mb-4">
-              {Object.entries(changedFields).length > 0 ? (
-                Object.entries(changedFields).map(
-                  ([field, { old, new: newValue }]) => (
-                    <li key={field} className="mb-2">
-                      <strong>{field}:</strong> {old} → {newValue}
-                    </li>
-                  )
-                )
-              ) : (
-                <p className="text-white">No changes made.</p>
-              )}
-            </ul>
-            <div className="flex justify-between">
-              <button
-                onClick={() => setShowChangesModal(false)}
-                className="bg-gray-600 text-white px-4 py-2 rounded"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSubmit}
-                className="bg-green-600 text-white px-4 py-2 rounded"
-              >
-                Confirm
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
