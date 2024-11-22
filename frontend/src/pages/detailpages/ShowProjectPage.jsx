@@ -16,11 +16,9 @@ const ShowProjectPage = () => {
   const [projectData, setProjectData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  // State for handling modals
-  const [deleteConfirmVisible, setDeleteConfirmVisible] = useState(false);
-  const [deleteInput, setDeleteInput] = useState("");
-  const [selectedProjectId, setSelectedProjectId] = useState(null);
+  const [expandedProject, setExpandedProject] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -49,38 +47,21 @@ const ShowProjectPage = () => {
   }, []);
 
   // Handle Delete
-  const handleDelete = (projectId) => {
-    setSelectedProjectId(projectId);
-    setDeleteConfirmVisible(true);
-  };
+  const handleDelete = async (projectId) => {
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/home/deleteproject/${projectId}`,
+        {
+          method: "DELETE",
+        }
+      );
+      if (!response.ok) throw new Error(`Error: ${response.statusText}`);
 
-  const confirmDelete = async () => {
-    if (deleteInput === "Delete") {
-      try {
-        const response = await fetch(
-          `http://localhost:8080/api/home/deleteproject/${selectedProjectId}`,
-          {
-            method: "DELETE",
-          }
-        );
-        if (!response.ok) throw new Error(`Error: ${response.statusText}`);
-
-        setProjectData(projectData.filter((project) => project._id !== selectedProjectId));
-        alert("Project deleted successfully");
-      } catch (error) {
-        console.error("Failed to delete project:", error);
-      } finally {
-        setDeleteConfirmVisible(false);
-        setDeleteInput("");
-      }
-    } else {
-      alert("Please type 'Delete' to confirm.");
+      setProjectData(projectData.filter((project) => project._id !== projectId));
+      alert("Project deleted successfully");
+    } catch (error) {
+      console.error("Failed to delete project:", error);
     }
-  };
-
-  const cancelDelete = () => {
-    setDeleteConfirmVisible(false);
-    setDeleteInput("");
   };
 
   // Handle Edit
@@ -88,7 +69,14 @@ const ShowProjectPage = () => {
     navigate("/add-project", { state: { project } });
   };
 
+  const handleCardClick = (projectId) => {
+    setExpandedProject((prev) => (prev === projectId ? null : projectId));
+  };
 
+  const paginatedProjects = projectData.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -96,48 +84,65 @@ const ShowProjectPage = () => {
   return (
     <div className="text-white bg-gray-900 min-h-screen">
       <Header />
-      <h1 className="text-3xl font-bold mb-6 text-center">Project Details</h1>
+      <h1 className="text-3xl font-bold mb-6 text-center text-emerald-500">Project Details</h1>
       {projectData.length > 0 ? (
         <div className="flex justify-center">
           <div className="w-full max-w-4xl space-y-6">
-            {projectData.map((project) => (
+            {paginatedProjects.map((project) => (
               <div
                 key={project._id}
                 className="p-6 border-2 border-gray-600 rounded-lg shadow-lg hover:shadow-2xl transition-all duration-300 bg-gray-800 relative"
+                onClick={() => handleCardClick(project._id)} // Card click handler
               >
-                
-                <div className="space-y-4">
-                  <p className="flex items-center gap-3 text-lg">
-                    <FaIdBadge size={20} />
-                    <strong>ID:</strong> {project.projectId}
-                  </p>
-                  <p className="flex items-center gap-3 text-lg">
-                    <FaProjectDiagram size={20} />
-                    <strong>Client:</strong> {project.clientName}
-                  </p>
-                  <p className="flex items-center gap-3 text-lg">
-                    <FaBuilding size={20} />
-                    <strong>Title:</strong> {project.title}
-                  </p>
-                  <p className="flex items-center gap-3 text-lg">
-                    <FaFileAlt size={20} />
-                    <strong>Due Date:</strong> {format(new Date(project.dueDate), "dd-MM-yyyy")}
-                  </p>
-                </div>
-                <div className="flex gap-6 justify-end mt-4">
-                  <button
-                    onClick={() => handleEdit(project)}
-                    className="text-blue-500 hover:text-blue-700 transition-all duration-200"
-                  >
-                    <FaEdit size={24} />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(project._id)}
-                    className="text-red-500 hover:text-red-700 transition-all duration-200"
-                  >
-                    <FaTrashAlt size={24} />
-                  </button>
-                </div>
+                {/* Title and Client Name */}
+                <p className="text-lg font-bold">{project.title}</p>
+                <p className="text-md">{project.clientName}</p>
+
+                {/* Show details when the card is expanded */}
+                {expandedProject === project._id && (
+                  <div className="space-y-4 mt-4">
+                    <div className="flex items-center gap-3 text-lg">
+                      <FaIdBadge size={20} />
+                      <strong>ID:</strong> {project.projectId}
+                    </div>
+                    <div className="flex items-center gap-3 text-lg">
+                      <FaProjectDiagram size={20} />
+                      <strong>Client:</strong> {project.clientName}
+                    </div>
+                    <div className="flex items-center gap-3 text-lg">
+                      <FaBuilding size={20} />
+                      <strong>Title:</strong> {project.title}
+                    </div>
+                    <div className="flex items-center gap-3 text-lg">
+                      <FaFileAlt size={20} />
+                      <strong>Due Date:</strong> {format(new Date(project.dueDate), "dd-MM-yyyy")}
+                    </div>
+
+                    {/* Edit/Delete Buttons */}
+                    <div className="flex gap-6 justify-end mt-4">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent card click
+                          handleEdit(project);
+                        }}
+                        className="bg-emerald-500 text-white px-6 py-2 rounded hover:bg-emerald-600 transition-all duration-300"
+                      >
+                        <FaEdit size={24} className="inline mr-2" />
+                        Edit
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent card click
+                          handleDelete(project._id);
+                        }}
+                        className="bg-red-500 text-white px-6 py-2 rounded hover:bg-red-600 transition-all duration-300"
+                      >
+                        <FaTrashAlt size={24} className="inline mr-2" />
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -146,48 +151,22 @@ const ShowProjectPage = () => {
         <p className="text-center text-gray-400">No project details found.</p>
       )}
 
-      {/* Delete Confirmation Modal */}
-      {deleteConfirmVisible && (
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
-          <div className="bg-gray-800 p-6 rounded-lg w-96">
-            <div className="flex justify-end">
-              <button
-                onClick={cancelDelete}
-                className="text-white text-xl font-bold"
-              >
-                X
-              </button>
-            </div>
-            <h3 className="text-xl text-center mb-4 text-red-500">
-              Are you sure you want to delete this project?
-            </h3>
-            <p className="text-center text-white mb-4">
-              Please type <strong>"Delete"</strong> to confirm:
-            </p>
-            <input
-              type="text"
-              value={deleteInput}
-              onChange={(e) => setDeleteInput(e.target.value)}
-              className="w-full p-2 rounded bg-gray-700 text-white mb-4"
-              placeholder="Type 'Delete' to confirm"
-            />
-            <div className="flex justify-between">
-              <button
-                onClick={cancelDelete}
-                className="bg-gray-600 text-white px-4 py-2 rounded"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={confirmDelete}
-                className="bg-red-600 text-white px-4 py-2 rounded"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Pagination */}
+      <div className="flex justify-center mt-6 space-x-2">
+        {Array.from({ length: Math.ceil(projectData.length / itemsPerPage) }).map((_, i) => (
+          <button
+            key={i}
+            onClick={() => setCurrentPage(i + 1)}
+            className={`px-3 py-2 rounded ${
+              currentPage === i + 1
+                ? "bg-emerald-500 text-white"
+                : "bg-gray-700 text-gray-400 hover:bg-gray-600"
+            }`}
+          >
+            {i + 1}
+          </button>
+        ))}
+      </div>
     </div>
   );
 };
