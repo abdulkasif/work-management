@@ -1,22 +1,17 @@
 import React, { useEffect, useState } from "react";
 import Header from "../../components/Header";
 import Input_product from "../../components/homecomponents/Input_product";
-import {
-  FiCalendar,
-  FiDollarSign,
-  FiFileText,
-  FiHash,
-  FiUsers,
-} from "react-icons/fi";
+import { FiCalendar, FiDollarSign, FiFileText, FiHash } from "react-icons/fi";
 import { useLocation, useNavigate } from "react-router-dom";
 import { format } from "date-fns";
+import ConfirmationModals from "../../components/ConfirmationModals";
+import Select from "react-select";
 
 function AddProjectPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const existingProject = location.state?.project;
 
-  // State for form fields, pre-filled if editing
   const [projectData, setProjectData] = useState({
     projectId: existingProject?.projectId || "",
     clientId: existingProject?.clientId || "",
@@ -39,21 +34,17 @@ function AddProjectPage() {
     assignedMembers: existingProject?.assignedMembers || [],
   });
 
-  const [allMembers, setAllMembers] = useState([]); // For fetching available members
-
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [allMembers, setAllMembers] = useState([]);
+  const [changedFields, setChangedFields] = useState({});
+  const [showChangesModal, setShowChangesModal] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(
-          "http://localhost:8080/api/home/getmember",
-          {
-            method: "GET",
-            headers: { "Content-Type": "application/json" },
-          }
-        );
+        const response = await fetch("http://localhost:8080/api/home/getmember", {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        });
 
         if (!response.ok) {
           throw new Error(`Error: ${response.statusText}`);
@@ -66,27 +57,44 @@ function AddProjectPage() {
           throw new Error("Unexpected response format");
         }
       } catch (error) {
-        setError(error.message);
-      } finally {
-        setLoading(false);
+        console.error("Error fetching members:", error.message);
       }
     };
 
     fetchData();
   }, []);
 
-  // Handle input change
   const handleChange = (field, value) => {
-    setProjectData((prevData) => ({
-      ...prevData,
-      [field]: value,
-    }));
+    setProjectData((prevData) => {
+      const updatedData = { ...prevData, [field]: value };
+
+      if (existingProject && existingProject[field] !== value) {
+        setChangedFields((prevFields) => ({
+          ...prevFields,
+          [field]: { old: existingProject[field] || "N/A", new: value },
+        }));
+      } else {
+        setChangedFields((prevFields) => {
+          const updatedFields = { ...prevFields };
+          delete updatedFields[field];
+          return updatedFields;
+        });
+      }
+
+      return updatedData;
+    });
   };
 
-  // Handle form submission
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleAssignedMembersChange = (selectedOptions) => {
+    const selectedIds = selectedOptions.map((option) => option.value);
+    setProjectData((prevData) => ({
+      ...prevData,
+      assignedMembers: selectedIds,
+    }));
+    handleChange("assignedMembers", selectedIds);
+  };
 
+  const handleSubmit = async () => {
     const url = existingProject
       ? `http://localhost:8080/api/home/editproject/${existingProject._id}`
       : `http://localhost:8080/api/home/project`;
@@ -95,19 +103,12 @@ function AddProjectPage() {
     try {
       const response = await fetch(url, {
         method,
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(projectData),
       });
 
       if (response.ok) {
-        alert(
-          existingProject
-            ? "Project updated successfully!"
-            : "Project added successfully!"
-        );
-        navigate("/projects"); // Navigate back to the projects page
+        navigate("/projects");
       } else {
         console.error("Failed to save project data");
       }
@@ -115,6 +116,11 @@ function AddProjectPage() {
       console.error("Error:", error);
     }
   };
+
+  const memberOptions = allMembers.map((member) => ({
+    value: member._id,
+    label: member.name,
+  }));
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-900">
@@ -124,20 +130,13 @@ function AddProjectPage() {
           <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text">
             {existingProject ? "Edit Project" : "New Project"}
           </h2>
-          <form className="space-y-4" onSubmit={handleSubmit}>
-            {/* Existing Inputs */}
+          <form className="space-y-4">
             <Input_product
               label="Project ID"
               placeholder="12345"
               icon={<FiHash />}
               value={projectData.projectId}
               onChange={(e) => handleChange("projectId", e.target.value)}
-            />
-            <Input_product
-              label="Client ID"
-              placeholder="AB123"
-              value={projectData.clientId}
-              onChange={(e) => handleChange("clientId", e.target.value)}
             />
             <Input_product
               label="Client Name"
@@ -152,96 +151,18 @@ function AddProjectPage() {
               value={projectData.title}
               onChange={(e) => handleChange("title", e.target.value)}
             />
-            <Input_product
-              label="Pages"
-              placeholder="100"
-              type="number"
-              value={projectData.pages}
-              onChange={(e) => handleChange("pages", e.target.value)}
+            <label className="block text-white font-medium mb-2">Assign Members</label>
+            <Select
+              isMulti
+              options={memberOptions}
+              value={memberOptions.filter((option) =>
+                projectData.assignedMembers.includes(option.value)
+              )}
+              onChange={handleAssignedMembersChange}
+              placeholder="Search and select members"
+              className="react-select-container"
+              classNamePrefix="react-select"
             />
-
-            {/* New Inputs */}
-            <Input_product
-              label="Description"
-              placeholder="Brief description of the project"
-              value={projectData.description}
-              onChange={(e) => handleChange("description", e.target.value)}
-            />
-            <label className="flex flex-col mb-4">
-              <p className="text-white text-base font-medium pb-2">Status</p>
-              <select
-                className="form-input w-full h-12 rounded-lg text-white border border-gray-700 bg-gray-800 focus:border-green-500 focus:ring-2 focus:ring-green-500 placeholder-gray-400 px-4"
-                value={projectData.status}
-                onChange={(e) => handleChange("status", e.target.value)}
-              >
-                <option value="Pending">Pending</option>
-                <option value="In Progress">In Progress</option>
-                <option value="Completed">Completed</option>
-                <option value="Cancelled">Cancelled</option>
-              </select>
-            </label>
-            <label className="flex flex-col mb-4">
-              <p className="text-white text-base font-medium pb-4">
-                {existingProject? "Assigned Members" : "Assign Members"}
-              </p>
-              <div className="grid grid-cols-3 gap-4">
-                {allMembers.map((member) => (
-                  <div key={member._id} className="flex items-center">
-                    <input
-                      type="checkbox"
-                      id={`member-${member._id}`}
-                      value={member._id}
-                      checked={projectData.assignedMembers.includes(member._id)}
-                      onChange={(e) => {
-                        const isChecked = e.target.checked;
-                        setProjectData((prevData) => ({
-                          ...prevData,
-                          assignedMembers: isChecked
-                            ? [...prevData.assignedMembers, member._id]
-                            : prevData.assignedMembers.filter(
-                                (id) => id !== member._id
-                              ),
-                        }));
-                      }}
-                      className="form-checkbox  text-green-500 bg-gray-800 border-gray-700 focus:ring-green-500"
-                    />
-                    <label
-                      htmlFor={`member-${member._id}`}
-                      className="ml-2 cursor-pointer text-white text-sm"
-                    >
-                      {member.name}
-                    </label>
-                  </div>
-                ))}
-              </div>
-            </label>
-            <label className="flex flex-col mb-4">
-              <p className="text-white text-base font-medium pb-2">
-                Input Type
-              </p>
-              <select
-                className="form-input w-full h-12 rounded-lg text-white border border-gray-700 bg-gray-800 focus:border-green-500 focus:ring-2 focus:ring-green-500 placeholder-gray-400 px-4"
-                value={projectData.inputType}
-                onChange={(e) => handleChange("inputType", e.target.value)}
-              >
-                <option value="Physical">Physical</option>
-                <option value="Digital">Digital</option>
-              </select>
-            </label>
-            <label className="flex flex-col mb-4">
-              <p className="text-white text-base font-medium pb-2">
-                Complexity
-              </p>
-              <select
-                className="form-input w-full h-12 rounded-lg text-white border border-gray-700 bg-gray-800 focus:border-green-500 focus:ring-2 focus:ring-green-500 placeholder-gray-400 px-4"
-                value={projectData.complexity}
-                onChange={(e) => handleChange("complexity", e.target.value)}
-              >
-                <option value="Easy">Easy</option>
-                <option value="Medium">Medium</option>
-                <option value="Hard">Hard</option>
-              </select>
-            </label>
             <Input_product
               label="Received Date"
               placeholder="MM/DD/YYYY"
@@ -251,14 +172,6 @@ function AddProjectPage() {
               onChange={(e) => handleChange("receivedDate", e.target.value)}
             />
             <Input_product
-              label="Due Date"
-              placeholder="MM/DD/YYYY"
-              icon={<FiCalendar />}
-              type="date"
-              value={projectData.dueDate}
-              onChange={(e) => handleChange("dueDate", e.target.value)}
-            />
-            <Input_product
               label="Client Cost"
               placeholder="$500"
               icon={<FiDollarSign />}
@@ -266,23 +179,6 @@ function AddProjectPage() {
               value={projectData.clientCost}
               onChange={(e) => handleChange("clientCost", e.target.value)}
             />
-            <Input_product
-              label="Outsource Cost"
-              placeholder="$500"
-              icon={<FiDollarSign />}
-              type="number"
-              value={projectData.outsourceCost}
-              onChange={(e) => handleChange("outsourceCost", e.target.value)}
-            />
-            <Input_product
-              label="Production Cost"
-              placeholder="$500"
-              icon={<FiDollarSign />}
-              type="number"
-              value={projectData.productionCost}
-              onChange={(e) => handleChange("productionCost", e.target.value)}
-            />
-            {/* Submit and Cancel Buttons */}
             <div className="flex justify-between mt-8">
               <button
                 type="button"
@@ -292,15 +188,36 @@ function AddProjectPage() {
                 Cancel
               </button>
               <button
-                type="submit"
+                type="button"
+                onClick={() => setShowChangesModal(true)}
                 className="flex-1 ml-2 py-3 bg-green-600 text-white rounded-lg font-bold hover:bg-green-500 transition duration-200"
               >
-                {existingProject ? "Edit Project" : "Add Project"}
+                Edit Changes
               </button>
             </div>
           </form>
         </div>
       </div>
+      {showChangesModal && (
+        <ConfirmationModals
+          message={
+            <div>
+              <h3 className="font-bold mb-4 text-xl">Review Changes</h3>
+              {Object.entries(changedFields).length > 0 ? (
+                Object.entries(changedFields).map(([field, { old, new: newValue }]) => (
+                  <p key={field} className="mb-2 text-white">
+                    <strong>{field}:</strong> {old} → {newValue}
+                  </p>
+                ))
+              ) : (
+                <p className="text-white">No changes made.</p>
+              )}
+            </div>
+          }
+          onConfirm={handleSubmit}
+          onCancel={() => setShowChangesModal(false)}
+        />
+      )}
     </div>
   );
 }

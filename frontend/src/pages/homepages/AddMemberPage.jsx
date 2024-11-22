@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from 'react';
 import Header from "../../components/Header"; // Adjust the path as necessary
 import PaswordStrengthMeter from "../../components/PaswordStrengthMeter";
 import { useLocation, useNavigate } from "react-router-dom";
+import ConfirmationModals from "../../components/ConfirmationModals"; // Adjust the path as necessary
 
 function AddMemberPage() {
   const navigate = useNavigate();
@@ -28,8 +29,9 @@ function AddMemberPage() {
   };
 
   const [formData, setFormData] = useState(initialFormData);
-  const [isPasswordFocused, setIsPasswordFocused] = useState(false);
   const [changedFields, setChangedFields] = useState({});
+  const [showModal, setShowModal] = useState(false);
+  const [isPasswordFocused, setIsPasswordFocused] = useState(false); // Declare the state for password focus
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -46,12 +48,20 @@ function AddMemberPage() {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleEditClick = () => {
+    if (Object.keys(changedFields).length > 0) {
+      setShowModal(true); // Show modal if there are changes
+    } else {
+      alert('No changes detected');
+    }
+  };
+
+  const handleConfirm = async () => {
+    // Submit the form data to the server
     const method = existingMember ? "PUT" : "POST";
     const url = existingMember
       ? `http://localhost:8080/api/home/editmember/${existingMember._id}`
-      : `http://localhost:8080/api/home/member`;
+      : "http://localhost:8080/api/home/member";
 
     try {
       const response = await fetch(url, {
@@ -70,6 +80,12 @@ function AddMemberPage() {
     } catch (error) {
       console.error("Error:", error);
     }
+
+    setShowModal(false); // Close the modal after submission
+  };
+
+  const handleCancel = () => {
+    setShowModal(false); // Close the modal if user cancels
   };
 
   return (
@@ -81,20 +97,7 @@ function AddMemberPage() {
             {existingMember ? "Update Member" : "Add Member"}
           </h2>
 
-          {Object.keys(changedFields).length > 0 && (
-            <div className="bg-gray-700 p-4 rounded-lg mb-6">
-              <h3 className="text-lg font-bold text-green-400 mb-2">Changes:</h3>
-              <ul className="text-white">
-                {Object.entries(changedFields).map(([key, value]) => (
-                  <li key={key}>
-                    <span className="font-bold">{key}:</span> {value}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          <form className="space-y-4" onSubmit={handleSubmit}>
+          <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
             <InputField
               label="Enter ID"
               name="id"
@@ -144,8 +147,8 @@ function AddMemberPage() {
                 name="password"
                 placeholder="Password"
                 value={formData.password}
-                onFocus={() => setIsPasswordFocused(true)}
-                onBlur={() => setIsPasswordFocused(false)}
+                onFocus={() => setIsPasswordFocused(true)} // Set focus state
+                onBlur={() => setIsPasswordFocused(false)} // Set blur state
                 onChange={handleInputChange}
                 className="form-input w-full h-12 rounded-lg text-white border border-gray-700 bg-gray-800 focus:border-green-500 focus:ring-2 focus:ring-green-500 placeholder-gray-400 px-4"
               />
@@ -153,6 +156,71 @@ function AddMemberPage() {
                 <PaswordStrengthMeter password={formData.password} />
               )}
             </label>
+
+            <InputField
+              label="Enter Mobile No"
+              name="mobileNo"
+              placeholder="123-456-7890"
+              value={formData.mobileNo}
+              onChange={handleInputChange}
+            />
+            <InputField
+              label="Enter PAN"
+              name="pan"
+              placeholder="ABCDE1234F"
+              value={formData.pan}
+              onChange={handleInputChange}
+            />
+            <InputField
+              label="Enter GST"
+              name="gst"
+              placeholder="27ABCDE1234F1Z5"
+              value={formData.gst}
+              onChange={handleInputChange}
+            />
+            <RadioField
+              label="Enter TDS Applicable"
+              name="tdsApplicable"
+              options={["Yes", "No"]}
+              value={formData.tdsApplicable}
+              onChange={handleInputChange}
+            />
+            <InputField
+              label="Enter Account Number"
+              name="accountNumber"
+              placeholder="1234567890"
+              value={formData.accountNumber}
+              onChange={handleInputChange}
+            />
+            <InputField
+              label="Enter IFSC"
+              name="ifsc"
+              placeholder="ABC123456789"
+              value={formData.ifsc}
+              onChange={handleInputChange}
+            />
+            <RadioField
+              label="Salary Type"
+              name="salaryType"
+              options={["Monthly", "Hourly"]}
+              value={formData.salaryType}
+              onChange={handleInputChange}
+            />
+            <InputField
+              label="Enter Salary"
+              name="salary"
+              placeholder="50000"
+              type="number"
+              value={formData.salary}
+              onChange={handleInputChange}
+            />
+            <SelectField
+              label="Employee Type"
+              name="employeeType"
+              options={["Monthly wise with PF", "Monthly wise with ESI"]}
+              value={formData.employeeType}
+              onChange={handleInputChange}
+            />
 
             <div className="flex justify-end mt-6">
               <button
@@ -163,7 +231,8 @@ function AddMemberPage() {
                 Cancel
               </button>
               <button
-                type="submit"
+                type="button"
+                onClick={handleEditClick}
                 className="flex-1 h-12 bg-green-600 text-white rounded-lg font-bold ml-2 transition duration-200 hover:bg-green-500"
               >
                 {existingMember ? "Update Member" : "Add Member"}
@@ -172,6 +241,14 @@ function AddMemberPage() {
           </form>
         </div>
       </div>
+
+      {showModal && (
+        <ConfirmationModals
+          changedFields={changedFields}
+          onConfirm={handleConfirm}
+          onCancel={handleCancel}
+        />
+      )}
     </div>
   );
 }
@@ -180,9 +257,9 @@ const InputField = ({ label, name, placeholder, value, onChange, type = "text" }
   <label className="flex flex-col mb-4">
     <p className="text-white text-base font-medium pb-2">{label}</p>
     <input
+      type={type}
       name={name}
       placeholder={placeholder}
-      type={type}
       value={value}
       onChange={onChange}
       className="form-input w-full h-12 rounded-lg text-white border border-gray-700 bg-gray-800 focus:border-green-500 focus:ring-2 focus:ring-green-500 placeholder-gray-400 px-4"
@@ -197,14 +274,36 @@ const SelectField = ({ label, name, options, value, onChange }) => (
       name={name}
       value={value}
       onChange={onChange}
-      className="form-select w-full h-12 rounded-lg text-white border border-gray-700 bg-gray-800 focus:border-green-500 focus:ring-2 focus:ring-green-500 px-4"
+      className="form-select w-full h-12 rounded-lg text-white border border-gray-700 bg-gray-800 focus:border-green-500 focus:ring-2 focus:ring-green-500"
     >
+      <option value="">Select</option>
       {options.map((option) => (
         <option key={option} value={option}>
           {option}
         </option>
       ))}
     </select>
+  </label>
+);
+
+const RadioField = ({ label, name, options, value, onChange }) => (
+  <label className="flex flex-col mb-4">
+    <p className="text-white text-base font-medium pb-2">{label}</p>
+    <div className="flex space-x-4">
+      {options.map((option) => (
+        <label key={option} className="inline-flex items-center text-white">
+          <input
+            type="radio"
+            name={name}
+            value={option}
+            checked={value === option}
+            onChange={onChange}
+            className="form-radio text-green-500 focus:ring-green-500"
+          />
+          <span className="ml-2">{option}</span>
+        </label>
+      ))}
+    </div>
   </label>
 );
 
@@ -216,7 +315,7 @@ const TextArea = ({ label, name, placeholder, value, onChange }) => (
       placeholder={placeholder}
       value={value}
       onChange={onChange}
-      className="form-textarea w-full h-24 rounded-lg text-white border border-gray-700 bg-gray-800 focus:border-green-500 focus:ring-2 focus:ring-green-500 placeholder-gray-400 px-4"
+      className="form-textarea w-full h-24 rounded-lg text-white border border-gray-700 bg-gray-800 focus:border-green-500 focus:ring-2 focus:ring-green-500 placeholder-gray-400 px-4 py-2"
     />
   </label>
 );
