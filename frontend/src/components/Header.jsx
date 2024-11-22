@@ -26,7 +26,7 @@ const Header = () => {
   return (
     <header className="flex items-center justify-between border-b border-solid border-b-[#293238] bg-[#222222] px-6 py-3 md:px-10">
       {/* Logo */}
-      <h2 className="text-white text-lg font-bold">Marine Apps</h2>
+      <h2 className="text-white text-lg font-bold">Marine Apps.Com</h2>
 
       {/* Left Section: Search Bar and Hamburger Menu */}
       <div className="flex items-center gap-4 md:hidden">
