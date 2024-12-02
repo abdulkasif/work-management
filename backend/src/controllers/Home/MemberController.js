@@ -66,7 +66,7 @@ exports.getMemberById = async (req,res) => {
     const memberData = await Member.findById(memberId);
     
     if (!memberData) {
-      res.status(404).json({success: false, message: "Member can't be found"});
+      return res.status(404).json({success: false, message: "Member can't be found"});
     }
 
     res.status(200).json({
